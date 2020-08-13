@@ -18,8 +18,10 @@ class Level:
     def __init__(self, n, x, y, attacks = 0):
         self.n = n
         self.dom_obj = Circle((255,255,255), 25, (x, y))
-        self.dom_obj.addChildren( (Circle((255,255,255,155), 15, (x, y)), Text(str(self.n), color = (155,155,155), font_size = 14)) )
-        self.dom_obj.center_children()
+        children = (Circle((255,255,255,155), 15, (x, y)), Text(str(self.n), color = (155,155,155), font_size = 14))
+        for child in children:
+            child.id = 'sub_icon'
+        self.dom_obj.addChildren( children )
 
         self.attacks = attacks
 
@@ -54,7 +56,6 @@ def set_grids(n_levels = 100):
     grid_h = h * (n_levels + 2)
     
     gridFrame = Rect((0, 0, vw, grid_h), bgColor = (0,0,0,155))
-
     x = round(vw * 0.25)
     #y = round(vh * 0.85)
     y = grid_h - h
@@ -75,6 +76,8 @@ def set_grids(n_levels = 100):
         attack = attacks[n - 1]
         lvl = Level(n, x, y, attacks = attack)
         lvl.dom_obj.offSet = (x, y)
+        #lvl.dom_obj.state['bg'] = False
+        #lvl.dom_obj.hovering['bg'] = True
         levels.append(lvl)
         gridFrame.addChild(lvl.dom_obj)
 
@@ -97,12 +100,12 @@ def show_grids(bg_alpha, gridFrame):
 
     i = 0
     slope_vec = -1
-    for lvl in gridFrame.children:
+    for lvl_icon in gridFrame.children:
         if i > 0:
             vec = slope_vec ** (i + 1)
             
             centerx1, centery1 = gridFrame.children[i - 1].rect.center
-            centerx2, centery2 = lvl.rect.center
+            centerx2, centery2 = lvl_icon.rect.center
             if vec == 1:
                 pt1 = (centerx1 + dx, centery1 - dy)
                 pt2 = (centerx2 - dx, centery2 + dy)

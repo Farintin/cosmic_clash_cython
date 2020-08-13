@@ -17,7 +17,7 @@ cdef class Game:
     cdef public int score, units
     cdef public object level, craft, bodies
     cdef list items, explosions, renders
-    cdef bint won, over
+    cdef public bint won, over
 
     def __init__(self, object craft, object Level, bint Won, bint Over):
         self.score = 0
@@ -137,12 +137,13 @@ cdef class Game:
 
                         item.exist = False
 
-                        self.craft.outline_color = colors.BLUE
+                        self.craft.outline_color = colors.SKYBLUE
                         self.craft.collide = True
                 item.nav()'''
 
     cdef tuple action
     def action(self, object bg_obj, object bg_alpha):
+        self.renders = []
         self.craft.action(bg_obj, bg_alpha)
 
         if self.bodies.attacks_count < self.level.attacks:
@@ -162,12 +163,11 @@ cdef class Game:
         '''bodiesAction = Process(target=self.bodyProcess(bg_obj, bg_alpha))
         bodiesAction.start()
         bodiesAction.join()'''
-        self.renders = []
         for body in self.bodies.bodies:
             if body.rotation:
                 body.rot()
             if body.surf_type == 'image':
-                self.renders.append( body.show(bg_obj, bg_alpha) )
+                self.renders += body.show(bg_obj, bg_alpha)
             else:
                 body.show(bg_obj, bg_alpha)
 
@@ -198,11 +198,11 @@ cdef class Game:
             else:
                 ### Celest and Craft collision event
                 self.craft.body_collision(body, self.explosions)
-
-                for shoot in self.craft.shoots: # Celest and Bullet collision event
+                ### Celest and Bullet collision event
+                for shoot in self.craft.shoots:
                     for bullet in shoot:
-                        for pt in bullet.outline_pos:
-                            if pt in body.outline_pos:
+                        for pt in body.outline_pos:
+                            if pt in bullet.outline_pos or (pt[0] in range(bullet.rect.left, bullet.rect.right) and pt[1] in range(bullet.rect.top, bullet.rect.bottom)):
                                 body.shield -= bullet.power
                                 body.show_outline(bg_alpha)
 
@@ -216,7 +216,7 @@ cdef class Game:
                                     unit = body.units
                                     unit.set_pos(pos)
                                     self.items.append(unit)
-                                    item = body.item(1)
+                                    item = body.item()
                                     if item.name:
                                         item.set_pos(pos)
                                         self.items.append(item)
@@ -251,8 +251,8 @@ cdef class Game:
 
         ### Items obj loops
         for item in self.items:
-            self.renders.append( item.show(bg_alpha) )
-            item.show_bounds(bg_alpha)
+            self.renders += item.show(bg_alpha)
+            #item.show_bounds(bg_alpha)
 
             if item.name == 'unit':
                 if item.top > vh: # Terminate Item out of view bottom

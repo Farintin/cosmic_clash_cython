@@ -207,8 +207,8 @@ class Scatter:
     def expand(self, bg_alpha):
         if self.active:
             for ptc in self.particles:
-                ptc[0][0] += round(ptc[1][0])
-                ptc[0][1] += round(ptc[1][1])
+                ptc[0][0] += ptc[1][0]
+                ptc[0][1] += ptc[1][1]
                 
                 if ptc[1][0] > 0:
                     ptc[1][0] += self.acce
@@ -250,7 +250,7 @@ class Scatter:
             self.i += 1
             d = p / mass
 
-            vel = [round( cos(radians(angle)) * d * 1 ), round( sin(radians(angle)) * d * 1 )]
+            vel = [cos(radians(angle)) * d * 1, sin(radians(angle)) * d * 1]
 
             color = random.choice(self.colors)
 

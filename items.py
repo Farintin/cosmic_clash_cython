@@ -2,11 +2,12 @@ import pygame
 import pygame.gfxdraw
 from svg.path import Path, parse_path
 import math
-
+import colors
+import db
 
 
 class Item:
-    def __init__(self, multi):
+    def __init__(self):
         self.DIM = (self.img.get_width(), self.img.get_height())
         self.exist = True
         self.magnetized = False
@@ -14,10 +15,12 @@ class Item:
         self.vel = (0,1.5)
         self.scal = 1
         self.acceConst = 400
-
-        self.multi = multi
-
-        self.timing = self.timer = 30 * self.multi
+        itemDoc = db.document["item"]["items"][self.name]
+        if self.upgradable:
+            self.multi = itemDoc["multi"]["multis"][ itemDoc["multi"]["state"] ]["n"]
+        if self.extendable:
+            self.timer = db.document["item"]["periods"][ itemDoc["period"]["state"] ]["t"]
+            self.period = self.timer
     
     def get_vecs(self, tar_center):
         self.dx = tar_center[0] - self.rect.centerx
@@ -87,8 +90,8 @@ class Item:
         self.vel = [dx * self.acceConst, dy * self.acceConst]
 
     def show(self, bg_obj):
-        pygame.draw.line(bg_obj, (255,0,0), (self.pos[0], self.bottom), (self.pos[0] + self.DIM[0], self.bottom))
-        return (self.img, self.pos)
+        #pygame.draw.line(bg_obj, (255,0,0), (self.pos[0], self.bottom), (self.pos[0] + self.DIM[0], self.bottom))
+        return [(self.img, self.pos)]
 
     def show_bounds(self, bg_obj):
         pygame.draw.rect(bg_obj, (255,0,0), self.rect, 1)
@@ -97,7 +100,7 @@ class Item:
 
 
 class Empty:
-    def __init__(self, multi):
+    def __init__(self):
         self.name = ''
 
 
@@ -106,12 +109,12 @@ class Empty:
 unit = pygame.image.load('img/item/unit.png').convert_alpha()
 unit = pygame.transform.scale(unit, (37,37))
 class Unit:
-    def __init__(self, multi):
+    def __init__(self):
         self.name = 'unit'
         self.imgAR = 1
         self.img = unit.copy()
-
-        self.multi = multi
+        unitDoc = db.document["item"]["items"]["unit"]
+        self.multi = unitDoc["multi"]["multis"][ unitDoc["multi"]["state"] ]["n"]
 
         self.vy = 2.2
         
@@ -196,8 +199,8 @@ class Unit:
         self.vx, self.vy = [dx * self.acceConst, dy * self.acceConst]
 
     def show(self, bg_obj):
-        pygame.draw.line(bg_obj, (255,0,0), (self.left, self.bottom), (self.left + self.DIM[0], self.bottom))
-        return (self.img, [self.left, self.top])
+        #pygame.draw.line(bg_obj, (255,0,0), (self.left, self.bottom), (self.left + self.DIM[0], self.bottom))
+        return [(self.img, [self.left, self.top])]
 
     def show_bounds(self, bg_obj):
         pygame.draw.rect(bg_obj, (255,0,0), self.rect, 1)
@@ -207,21 +210,22 @@ class Unit:
 
 
 ######################### Items yypes
-'''
-bubble = pygame.image.load('img/item/bubble.png').convert_alpha()
+bubble = pygame.image.load('img/item/bubble-sm.png').convert_alpha()
 bubbleAR = bubble.get_width() / bubble.get_height()
-bubble = pygame.transform.scale(bubble, (30, round(30 / bubbleAR)))
+bubble = pygame.transform.scale(bubble, (28, round(28 / bubbleAR)))
 class Bubble(Item):
-    def __init__(self, multi):
+    def __init__(self):
         self.name = 'bubble'
+        self.extendable = True
+        self.upgradable = False
+
         self.imgAR = bubbleAR
         self.img = bubble.copy()
-
-        super().__init__(multi)
-        self.rect = pygame.Rect(0,0, self.DIM[0] * 0.8, self.DIM[1] * 0.8)
+        super().__init__()
+        self.rect = pygame.Rect(0,0, self.DIM[0] * 0.8, self.DIM[1] * 0.9)
         self.rectCenterxLock = self.DIM[0] * 0.5
 
-        self.collected_color = (55,155,255)'''
+        self.collected_color = colors.AQUABLUE
 
 
 life_gem_orbits_data = []
@@ -257,16 +261,19 @@ def make_life_gem_orbs():
                                     'ptc_color': path['ptc_color']
                                     })
     return life_gem_orbits_data
-gem = pygame.image.load('img/item/gem.png').convert_alpha()
+gem = pygame.image.load('img/item/gem-sm.png').convert_alpha()
 gemAR = gem.get_width() / gem.get_height()
 class Life(Item):
-    def __init__(self, multi):
+    def __init__(self):
         self.name = 'life'
+        self.extendable = False
+        self.upgradable = False
+
         self.imgAR = gemAR
         self.img = gem.copy()
         
         self.orbits_data = life_gem_orbits_data
-        super().__init__(multi)
+        super().__init__()
         self.rect = pygame.Rect(0,0, self.DIM[0] * 0.3, self.DIM[1] * 0.8)
         self.rectCenterxLock = self.DIM[0] * 0.5
 
@@ -301,40 +308,46 @@ class Life(Item):
 
 magnet = pygame.image.load('img/item/magnet.png').convert_alpha()
 magnetAR = magnet.get_width() / magnet.get_height()
-magnet = pygame.transform.scale(magnet, (30, round(30 / magnetAR)))
+magnet = pygame.transform.scale(magnet, (24, round(24 / magnetAR)))
 class Magnet(Item):
-    def __init__(self, multi):
+    def __init__(self):
         self.name = 'magnet'
+        self.extendable = True
+        self.upgradable = False
+
         self.imgAR = magnetAR
         self.img = magnet.copy()
-
-        super().__init__(multi)
+        super().__init__()
         self.rect = pygame.Rect(0,0, self.DIM[0] * 0.8, self.DIM[1] * 0.9)
         self.rectCenterxLock = self.DIM[0] * 0.5
 
         self.collected_color = (255,55,55)
 
 
-puff = pygame.image.load('img/item/puff.png').convert_alpha()
-puff = pygame.transform.scale(puff, (37, 37))
-class Puff(Item):
-    def __init__(self, multi):
-        self.name = 'puff'
-        self.imgAR = 1
-        self.img = puff.copy()
+puffy = pygame.image.load('img/item/puff-sm.png').convert_alpha()
+puffy = pygame.transform.scale(puffy, (28, 28))
+class Puffy(Item):
+    def __init__(self):
+        self.name = 'puffy'
+        self.extendable = True
+        self.upgradable = True
 
-        super().__init__(multi)
+        self.imgAR = 1
+        self.img = puffy.copy()
+        super().__init__()
         self.rect = pygame.Rect(0,0, self.DIM[0] * 0.8, self.DIM[1] * 0.9)
         self.rectCenterxLock = self.DIM[0] * 0.55
 
         self.collected_color = (255,195,55)
 
-        if self.multi == 1:
+        if self.multi == 2:
             self.half_w = 3
-        elif self.multi == 2:
-            self.half_w = 4
         elif self.multi == 4:
+            self.half_w = 4
+        elif self.multi == 6:
             self.half_w = 5
+        elif self.multi == 8:
+            self.half_w = 6
         self.h = self.half_w * 2 * 2
 
 
@@ -343,29 +356,35 @@ rapidAR1 = rapid.get_width() / rapid.get_height()
 rapidAR2 = 25 / (20 / rapidAR1)
 rapid = pygame.transform.scale(rapid, (25, round(25 / rapidAR2)))
 class Rapid(Item):
-    def __init__(self, multi):
+    def __init__(self):
         self.name = 'rapid'
+        self.extendable = True
+        self.upgradable = True
+
         self.imgAR = rapidAR2
         self.img = rapid.copy()
         
-        super().__init__(multi)
+        super().__init__()
         self.rect = pygame.Rect(0,0, self.DIM[0] * 0.5, self.DIM[1] * 0.8)
         self.rectCenterxLock = self.DIM[0] * 0.5
 
         self.collected_color = (255,235,55)
 
 
-shield = pygame.image.load('img/item/shield.png').convert_alpha()
+shield = pygame.image.load('img/item/shield-sm.png').convert_alpha()
 shieldAR = shield.get_width() / shield.get_height()
-shield = pygame.transform.scale(shield, (32, round(32 / shieldAR)))
+shield = pygame.transform.scale(shield, (24, round(26 / shieldAR)))
 class Shield(Item):
-    def __init__(self, multi):
+    def __init__(self):
         self.name = 'shield'
+        self.extendable = False
+        self.upgradable = False
+
         self.imgAR = shieldAR
         self.img = shield.copy()
         
-        super().__init__(multi)
+        super().__init__()
         self.rect = pygame.Rect(0,0, self.DIM[0] * 0.8, self.DIM[1] * 0.9)
         self.rectCenterxLock = self.DIM[0] * 0.55
 
-        self.collected_color = (0,255,205)
+        self.collected_color = colors.AQUA

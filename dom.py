@@ -7,36 +7,12 @@ vw = display.view_width
 vh = display.view_height
 
 
-class Text:
-    def __init__(self, text, color = (255,255,255,255), font_size = 16, font_type = 'freesansbold.ttf'):
-        self.obj_type = 'surf'
-        self.name = 'text'
-        self.text = text
-        self.color = color
-        self.font = pygame.font.Font(font_type, font_size)
-        self.render = self.font.render(self.text, True, self.color)
-        self.rect = self.render.get_rect()
-
-        self.default = {'color': self.color, 'font_size': font_size, 'center': self.rect.center}
-    
-    def setColor(self, color = (255,255,255,255)):
-        if color != (255,255,255,255):
-            self.color = color
-        self.render = self.font.render(self.text, True, self.color)
-        self.rect = self.render.get_rect()
-
-        self.rect.center = self.default['center']
-
-        return self.color
-
-    def show(self, bg_alpha):
-        bg_alpha.blit(self.render, self.rect)
-
-
-
 class Container:
     def __init__(self, color):
         self.obj_type = 'draw'
+        self.id = ''
+        self.parent = None
+        self.compClass = None
         self.children = []
 
         self.bgColor = color
@@ -47,15 +23,18 @@ class Container:
 
         self.default = {'bgColor': self.bgColor, 'border_width': self.border_width}
 
+        self.hover = False
         self.click = False
         self.clicked = False
     
     def addChild(self, obj):
+        obj.rel = (obj.rect.left - self.rect.left, obj.rect.top - self.rect.top)
+        obj.parent = self
         self.children.append(obj)
     
     def addChildren(self, objs):
         for obj in objs:
-            self.children.append(obj)
+            self.addChild(obj)
 
     def borderWidth(self, w = None):
         if w != None:
@@ -72,36 +51,31 @@ class Container:
 
     def center_child(self, child):
         child.default['center'] = child.rect.center = self.rect.center
+        child.rel = (child.rect.left - self.rect.left, child.rect.top - self.rect.top)
+
 
     def center_children(self):
         for child in self.children:
-            child.default['center'] = child.rect.center = self.rect.center
+            self.center_child(child)
     
     def getChildBy(self, attr, value):
         for child in self.children:
             if attr == 'name' and child.name == value:
                 return child
 
-    def nav(self, dx, dy):
-        self.rect.left += dx
-        self.rect.top += dy
-        for child in self.children:
-            child.rect.left += dx
-            child.rect.top += dy
-
     def onHover(self, handlers, pos):
         if self.name == 'rect':
             if (pos[0] in range(self.rect.left, self.rect.left + self.rect.width)) and (pos[1] in range(self.rect.top, self.rect.top + self.rect.height)):
-                hover = True
+                self.hover = True
             else:
-                hover = False
+                self.hover = False
         elif self.name == 'circle':
             if pygame.sprite.collide_circle(CursorTarget(pos), self):
-                hover = True
+                self.hover = True
             else:
-                hover = False
+                self.hover = False
 
-        if hover:
+        if self.hover:
             self.focusCounter += 1
             if self.focusCounter == 1:
                 for handler in handlers:
@@ -112,41 +86,110 @@ class Container:
                     handler.reset(self)
                 self.focusCounter = 0
 
-    def onClick(self, handlers, pos):
+    def onClick(self, handlers = [], pos = ()):
         bools = []
         if self.name == 'rect':
             if (pos[0] in range(self.rect.left, self.rect.left + self.rect.width)) and (pos[1] in range(self.rect.top, self.rect.top + self.rect.height)):
                 self.click = True
-                self.clicked = True
             else:
                 self.click = False
         elif self.name == 'circle':
             if pygame.sprite.collide_circle(CursorTarget(pos), self):
                 self.click = True
-                self.clicked = True
             else:
                 self.click = False
-        
-        if self.click:
-            for handler in handlers:
-                bools.append(handler.switch(self))
-            #print(self.getChildBy('name', 'text').text, bools)
-        else:
-            for handler in handlers:
-                bools.append(handler.passOn(self))
-        return bools
+        if handlers:
+            if self.click:
+                for handler in handlers:
+                    bools.append(handler.switch(self))
+                #print(self.getChildBy('name', 'text').text, bools)
+            else:
+                for handler in handlers:
+                    bools.append(handler.passOn(self))
+            return bools
 
     def show(self, bg_alpha):
-        if self.name == 'rect':
-            pygame.draw.rect(bg_alpha, self.bgColor, self.rect, self.border_width)
-        elif self.name == 'circle':
-            if self.bg:
-                pygame.gfxdraw.filled_circle(bg_alpha, self.rect.centerx, self.rect.centery, self.radius, self.bgColor)
-            else:
-                pygame.gfxdraw.circle(bg_alpha, self.rect.centerx, self.rect.centery, self.radius, self.bgColor)
+        if self.visible:
+            if self.name == 'rect':
+                pygame.draw.rect(bg_alpha, self.bgColor, self.rect, self.border_width)
+            elif self.name == 'circle':
+                if self.bg:
+                    pygame.gfxdraw.filled_circle(bg_alpha, self.rect.centerx, self.rect.centery, self.radius, self.bgColor)
+                else:
+                    pygame.gfxdraw.circle(bg_alpha, self.rect.centerx, self.rect.centery, self.radius, self.bgColor)
 
+            for child in self.children:
+                child.show(bg_alpha)
+
+    def vacate(self):
         for child in self.children:
-            child.show(bg_alpha)
+            child.rect.left = self.rect.left + child.rel[0]
+            child.rect.top = self.rect.top + child.rel[1]
+            if child.name == 'text':
+                child.setPara()
+            else:
+                child.vacate()
+
+
+
+
+class Text:
+    def __init__(self, text, color = (255,255,255,255), font_size = 16, font_type = 'freesansbold.ttf'):
+        self.obj_type = 'surf'
+        self.name = 'text'
+
+        self.pl = None
+        if '\n' in text:
+            index = text.index('\n')
+            self.text = text[:index]
+            self.nl = Text(text[index + 1:], color, font_size, font_type)
+            self.nl.pl = self
+        else:
+            self.text = text
+            self.nl = None
+
+        self.color = color
+        self.font = pygame.font.Font(font_type, font_size)
+        self.render = self.font.render(self.text, True, self.color)
+        self.rect = self.render.get_rect()
+
+        self.default = {'color': self.color, 'font_size': font_size, 'center': self.rect.center}
+
+        self.children = []
+    
+    def setColor(self, color = (255,255,255,255)):
+        if color != (255,255,255,255):
+            self.color = color
+        self.render = self.font.render(self.text, True, self.color)
+        self.rect = self.render.get_rect()
+
+        self.rect.center = self.default['center']
+
+        return self.color
+
+    def setPara(self):
+        if self.nl:
+            self.nl.rect.topleft = (self.rect.left, self.rect.bottom)
+            self.nl.setPara()
+
+    def show(self, bg_alpha):
+        bg_alpha.blit(self.render, self.rect)
+        if self.nl:
+            self.nl.show(bg_alpha)
+
+
+
+
+class Img(Container):
+    def __init__(self, img, w = 28, h = 28):
+        self.name = 'surf'
+        self.image = pygame.transform.scale(img, (w, h))
+        self.rect = pygame.Rect(0,0,w,h)
+        self.children = []
+ 
+    def show(self, bg_obj):
+        bg_obj.blit(self.image, self.rect)
+        #pygame.draw.rect(bg_obj, (255,0,0), self.rect, 1)
 
 
 class Rect(Container):
@@ -164,7 +207,8 @@ class Poly(Rect):
         self.pts = pts
 
     def show(self, bg_alpha):
-        pygame.draw.polygon(bg_alpha, self.bgColor, self.pts)
+        if self.visible:
+            pygame.draw.polygon(bg_alpha, self.bgColor, self.pts)
 
 
 
@@ -260,7 +304,7 @@ def moveBack_moveOn(elem, Whiles):
 def switch(elem, Whiles):
     bools = []
     for While in Whiles:
-        bools.append((While + 1) * -1)
+        bools.append(not While)
     return bools
 
 def passOn(elem, Whiles):

@@ -174,24 +174,24 @@ class Sprite:
         self.rot_angle_rate = 1
 
     def load_rotated_sprites(self):
-        all_sprites = []
+        all_sprites_data = []
         for sprites in self.sprites:
-            body_rot_sprites = []
+            body_rot_sprites_data = []
 
             for sprite in sprites:
-                rot_sprites = []
+                rot_sprites_data = []
 
                 for angle in range(0, 360, self.rot_angle_rate):
-                    img_rot = pygame.transform.rotate(sprite, angle).convert_alpha()
+                    img_rot = pygame.transform.rotate(sprite, angle)
                     mask = pygame.mask.from_surface(img_rot)
-                    rot_sprites.append( [img_rot, [pt for pt in mask.outline()]] )
+                    rot_sprites_data.append( [img_rot, [pt for pt in mask.outline()], (img_rot.get_width(), img_rot.get_height())] )
 
-                body_rot_sprites.append(rot_sprites)
+                body_rot_sprites_data.append(rot_sprites_data)
 
-            all_sprites.append(body_rot_sprites)
+            all_sprites_data.append(body_rot_sprites_data)
 
-        self.meteorite_rotated_sprites1, self.meteorite_rotated_sprites2, self.meteorite_rotated_sprites3 = all_sprites[0]
-        self.meteor_rotated_sprites1, self.meteor_rotated_sprites2, self.meteor_rotated_sprites3 = all_sprites[1]
+        self.meteorite_rotated_sprites_data1, self.meteorite_rotated_sprites_data2, self.meteorite_rotated_sprites_data3 = all_sprites_data[0]
+        self.meteor_rotated_sprites_data1, self.meteor_rotated_sprites_data2, self.meteor_rotated_sprites_data3 = all_sprites_data[1]
 
     def load_comet_outline(self):
         comets_outlines = []
@@ -224,8 +224,8 @@ sprites_init = Sprite()
 cdef class Meteorite:
     cdef public dict spin, ripple_props, scatter_props
     cdef public str surf_type, name
-    cdef public list items, pos, vel, rotated_sprites, outline, outline_pos
-    cdef public int shield, shieldMax, power, explode_avg_rad, explode_alpha, smoothed_rot_x, smoothed_rot_y, img_rot_w, img_rot_h
+    cdef public list items, pos, vel, rotated_sprites_data, outline, outline_pos
+    cdef public int shield, shieldMax, power, explode_avg_rad, explode_alpha, smoothed_rot_x, smoothed_rot_y
     cdef public bint exist, flaming, rotation
     cdef public float bottom, mass
     cdef public tuple DIM, ROT_DIM
@@ -249,22 +249,22 @@ cdef class Meteorite:
         if mass == 0:
             self.mass = 1
             self.DIM = sprite.meteorite1_DIM
-            self.rotated_sprites = sprite.meteorite_rotated_sprites1
+            self.rotated_sprites_data = sprite.meteorite_rotated_sprites_data1
         elif mass == 1:
             self.mass = 1.3
             self.DIM = sprite.meteorite2_DIM
-            self.rotated_sprites = sprite.meteorite_rotated_sprites2
+            self.rotated_sprites_data = sprite.meteorite_rotated_sprites_data2
         elif mass == 2:
             self.mass = 1.6
             self.DIM = sprite.meteorite3_DIM
-            self.rotated_sprites = sprite.meteorite_rotated_sprites3
+            self.rotated_sprites_data = sprite.meteorite_rotated_sprites_data3
         
         self.pos = [ random.randrange( round(self.DIM[0] / 2), vw - self.DIM[0]), - self.DIM[1] ]
         self.vel = [0,1]
         self.bottom = self.pos[1] + self.DIM[1] / 3
 
-        self.units = Unit(1)
-        self.items = [Life]*1 + [Shield]*8 + [Empty]*1
+        self.units = Unit()
+        self.items = [Life]*1 + [Empty]*2 + [Shield]*4 + [Puffy]*8
 
         self.ripple_props = {
             'avg_r': 18 * self.mass,
@@ -281,9 +281,24 @@ cdef class Meteorite:
         }
         self.scatter = Scatter(self.scatter_props)
 
-        self.fontObj = pygame.font.Font('freesansbold.ttf', 14)
+        self.fontObj = pygame.font.Font('freesansbold.ttf', 24)
         self.textSurfaceObj = self.fontObj.render('-'+str(self.power), False, (205,25,25))
         self.textRectObj = self.textSurfaceObj.get_rect()
+
+    ### Unique
+    cpdef void nav(self):
+        self.pos[1] += self.vel[1]
+        self.bottom = self.pos[1] + self.DIM[1] / 3
+
+    cpdef void rot(self):
+        self.img_rot, self.outline, self.ROT_DIM = self.rotated_sprites_data[int(self.spin['angle'] / self.spin['rate'])]
+        if self.spin['angle'] >= 359:
+            self.spin['angle'] = 0
+        else:
+            self.spin['angle'] += self.spin['rate']
+            
+        self.smoothed_rot_x = round(self.pos[0]) - int(self.ROT_DIM[0] / 2)
+        self.smoothed_rot_y = round(self.pos[1]) - round(self.ROT_DIM[1] / 2)
 
     cpdef void selc_item(self):
         if self.items:
@@ -294,8 +309,8 @@ cdef class Meteorite:
         for pt in self.outline:
             self.outline_pos.append([self.smoothed_rot_x + pt[0], self.smoothed_rot_y + pt[1]])
 
-    cpdef tuple show(self, object bg_obj, object bg_alpha):
-        return (self.img_rot, (self.smoothed_rot_x, self.smoothed_rot_y))
+    cpdef list show(self, object bg_obj, object bg_alpha):
+        return [(self.img_rot, (self.smoothed_rot_x, self.smoothed_rot_y))]
         
     cpdef void show_shield(self, object bg_alpha):
         x = self.pos[0] + self.DIM[0] / 2
@@ -304,17 +319,17 @@ cdef class Meteorite:
             pygame.draw.rect(bg_alpha, RED, (x, y, self.shieldMax + 2, 3))
             pygame.draw.rect(bg_alpha, YELLOW, (x + 1, y + 1, self.shield, 1))
 
-            if self.pos[1] < vh / 8:
+            if self.pos[1] < 150:
                 self.textRectObj.topleft = [x, y + 30]
         else:
             x = self.pos[0] - self.DIM[0] / 2 - self.shieldMax + 2
             pygame.draw.rect(bg_alpha, RED, (x, y, self.shieldMax + 2, 3))
             pygame.draw.rect(bg_alpha, YELLOW, (x + 1 + (self.shieldMax - self.shield), y + 1, self.shield, 1))
 
-            if self.pos[1] < vh / 8:
+            if self.pos[1] < 150:
                 self.textRectObj.topright = [x + 1 + self.shieldMax, y + 30]
 
-        if self.pos[1] < vh / 8:
+        if self.pos[1] < 150:
             bg_alpha.blit(self.textSurfaceObj, self.textRectObj)
         
     
@@ -328,34 +343,13 @@ cdef class Meteorite:
         '''else:
             if self.pos[1] > vh or self.rect.top > vh:
                 self.exist = False'''
-    ### Unique
-    cpdef void nav(self):
-        self.pos[1] += self.vel[1]
-        self.bottom = self.pos[1] + self.DIM[1] / 3
-
-    cpdef void rot(self):
-        self.img_rot, self.outline = self.rotated_sprites[int(self.spin['angle'] / self.spin['rate'])]
-        if self.spin['angle'] >= 359:
-            self.spin['angle'] = 0
-        else:
-            self.spin['angle'] += self.spin['rate']
-        
-        self.img_rot_w = self.img_rot.get_width()
-        self.img_rot_h = self.img_rot.get_height()
-            
-        self.smoothed_rot_x = round(self.pos[0]) - int(self.img_rot_w / 2)
-        self.smoothed_rot_y = round(self.pos[1]) - round(self.img_rot_h / 2)
-
-        self.ROT_DIM = (self.img_rot_w, self.img_rot_h)
-
-
 
 
 cdef class Meteor:
     cdef public dict spin, prop, props, ripple_props, scatter_props
     cdef public str surf_type, name
-    cdef public list items, pos, vel, rotated_sprites, outline, outline_pos
-    cdef public int shield, shieldMax, power, explode_avg_rad, explode_alpha, smoothed_rot_x, smoothed_rot_y, img_rot_w, img_rot_h
+    cdef public list items, pos, vel, rotated_sprites_data, outline, outline_pos
+    cdef public int shield, shieldMax, power, explode_avg_rad, explode_alpha, smoothed_rot_x, smoothed_rot_y
     cdef public bint exist, flaming, rotation
     cdef public float bottom, mass
     cdef public tuple DIM, ROT_DIM
@@ -378,15 +372,15 @@ cdef class Meteor:
         if mass == 0:
             self.mass = 1
             self.DIM = sprites_init.meteor1_DIM
-            self.rotated_sprites = sprites_init.meteor_rotated_sprites1
+            self.rotated_sprites_data = sprites_init.meteor_rotated_sprites_data1
         elif mass == 1:
             self.mass = 1.3
             self.DIM = sprites_init.meteor2_DIM
-            self.rotated_sprites = sprites_init.meteor_rotated_sprites2
+            self.rotated_sprites_data = sprites_init.meteor_rotated_sprites_data2
         elif mass == 2:
             self.mass = 1.6
             self.DIM = sprites_init.meteor3_DIM
-            self.rotated_sprites = sprites_init.meteor_rotated_sprites3
+            self.rotated_sprites_data = sprites_init.meteor_rotated_sprites_data3
 
         self.pos = [random.randrange(20, vw - self.DIM[0] - 20), -self.DIM[1]]
         self.vel = vel
@@ -408,8 +402,8 @@ cdef class Meteor:
         #self.shield = self.shieldMax = 24
         #self.power = 2
 
-        self.units = Unit(1)
-        self.items = [Life]*1 + [Rapid]*6 + [Puff]*6 + [Empty]*2
+        self.units = Unit()
+        self.items = [Life]*1 + [Empty]*4 + [Shield]*4 + [Magnet]*8 + [Rapid]*16 + [Puffy]*32
 
         self.ripple_props = {
             'avg_r': 18 * self.mass,
@@ -430,6 +424,25 @@ cdef class Meteor:
         self.textSurfaceObj = self.fontObj.render('-'+str(self.power), False, (205,25,25))
         self.textRectObj = self.textSurfaceObj.get_rect()
     
+    ### Unique
+    cpdef void combust(self, object bg_alpha):
+        self.prop['pt'] = (round(self.ROT_DIM[0] / 2), round(self.ROT_DIM[1] * 0.65))
+        self.flame.combust(bg_alpha, [self.smoothed_rot_x, self.smoothed_rot_y], self.prop['pt'])
+        
+    cpdef void nav(self):
+        self.pos[1] += self.vel[1]
+        self.bottom = self.pos[1] + self.DIM[1] / 2
+
+    cpdef void rot(self):
+        self.img_rot, self.outline, self.ROT_DIM = self.rotated_sprites_data[int(self.spin['angle'] / self.spin['rate'])]
+        if self.spin['angle'] >= 359:
+            self.spin['angle'] = 0
+        else:
+            self.spin['angle'] += self.spin['rate']
+        
+        self.smoothed_rot_x = round(self.pos[0]) - int(self.ROT_DIM[0] / 2 - 0.5)
+        self.smoothed_rot_y = round(self.pos[1]) - round(self.ROT_DIM[1] / 2 + 0.5)
+
     cpdef void selc_item(self):
         if self.items:
             self.item = random.choice(self.items)
@@ -439,10 +452,10 @@ cdef class Meteor:
         for pt in self.outline:
             self.outline_pos.append([self.smoothed_rot_x + pt[0], self.smoothed_rot_y + pt[1]])
 
-    cpdef tuple show(self, object bg_obj, object bg_alpha):
+    cpdef list show(self, object bg_obj, object bg_alpha):
         if self.flaming:
             self.combust(bg_alpha)
-        return (self.img_rot, (self.smoothed_rot_x, self.smoothed_rot_y))
+        return [(self.img_rot, (self.smoothed_rot_x, self.smoothed_rot_y))]
         
     cpdef void show_shield(self, object bg_alpha):
         x = self.pos[0] + self.DIM[0] / 2
@@ -451,17 +464,17 @@ cdef class Meteor:
             pygame.draw.rect(bg_alpha, RED, (x, y, self.shieldMax + 2, 3))
             pygame.draw.rect(bg_alpha, YELLOW, (x + 1, y + 1, self.shield, 1))
 
-            if self.pos[1] < vh / 8:
+            if self.pos[1] < 150:
                 self.textRectObj.topleft = [x, y + 30]
         else:
             x = self.pos[0] - self.DIM[0] / 2 - self.shieldMax + 2
             pygame.draw.rect(bg_alpha, RED, (x, y, self.shieldMax + 2, 3))
             pygame.draw.rect(bg_alpha, YELLOW, (x + 1 + (self.shieldMax - self.shield), y + 1, self.shield, 1))
 
-            if self.pos[1] < vh / 8:
+            if self.pos[1] < 150:
                 self.textRectObj.topright = [x + 1 + self.shieldMax, y + 30]
 
-        if self.pos[1] < vh / 8:
+        if self.pos[1] < 150:
             bg_alpha.blit(self.textSurfaceObj, self.textRectObj)
     
     cpdef void show_outline(self, object bg_obj):
@@ -472,32 +485,6 @@ cdef class Meteor:
         if self.smoothed_rot_y > vh:
             self.exist = False
     
-    ### Unique
-    cpdef void nav(self):
-        self.pos[1] += self.vel[1]
-        self.bottom = self.pos[1] + self.DIM[1] / 2
-
-    cpdef void rot(self):
-        self.img_rot, self.outline = self.rotated_sprites[int(self.spin['angle'] / self.spin['rate'])]
-        if self.spin['angle'] >= 359:
-            self.spin['angle'] = 0
-        else:
-            self.spin['angle'] += self.spin['rate']
-        
-        self.img_rot_w = self.img_rot.get_width()
-        self.img_rot_h = self.img_rot.get_height()
-            
-        self.smoothed_rot_x = round(self.pos[0]) - int(self.img_rot_w / 2 - 0.5)
-        self.smoothed_rot_y = round(self.pos[1]) - round(self.img_rot_h / 2 + 0.5)
-
-        self.ROT_DIM = (self.img_rot_w, self.img_rot_h)
-
-    cpdef void combust(self, object bg_alpha):
-        self.prop['pt'] = (round(self.ROT_DIM[0] / 2), round(self.ROT_DIM[1] * 0.65))
-        self.flame.combust(bg_alpha, [self.smoothed_rot_x, self.smoothed_rot_y], self.prop['pt'])
-
-
-
 
 cdef class Comet:
     cdef public dict prop1, props1, prop2, props2, prop3, props3, prop4, props4, ripple_props, scatter_props
@@ -520,7 +507,7 @@ cdef class Comet:
         self.power = power
     
         ### Unique
-        self.surf_type = 'draw'
+        self.surf_type = 'drawn'
         self.name = 'comet'
 
         if mass == 0:
@@ -594,8 +581,8 @@ cdef class Comet:
                         }
         self.coma4 = Coma(self.prop4, self.props4)
 
-        self.units = Unit(1)
-        self.items = [Life]*1 + [Shield]*2 + [Rapid]*8 + [Puff]*16 + [Magnet]*40 + [Empty]*4
+        self.units = Unit()
+        self.items = [Life]*1 + [Empty]*4 + [Bubble]*400 + [Shield]*400 + [Magnet]*12 + [Rapid]*24 + [Puffy]*32
 
         self.ripple_props = {
             'avg_r': 32 * self.mass,
@@ -652,7 +639,7 @@ cdef class Comet:
             pygame.draw.rect(bg_alpha, RED, (x, y, self.shieldMax + 2, 3))
             pygame.draw.rect(bg_alpha, YELLOW, (x + 1, y + 1, self.shield, 1))
 
-            if self.rect.top < vh / 8:
+            if self.rect.top < 150:
                 self.textRectObj.topleft = [x, y + 30]
 
         else:
@@ -660,10 +647,10 @@ cdef class Comet:
             pygame.draw.rect(bg_alpha, RED, (x, y, self.shieldMax + 2, 3))
             pygame.draw.rect(bg_alpha, YELLOW, (x + 1 + (self.shieldMax - self.shield), y + 1, self.shield, 1))
 
-            if self.rect.top < vh / 8:
+            if self.rect.top < 150:
                 self.textRectObj.topright = [x + 1 + self.shieldMax, y + 30]
 
-        if self.rect.top < vh / 8:
+        if self.rect.top < 150:
             bg_alpha.blit(self.textSurfaceObj, self.textRectObj)
 
     cpdef void show_outline(self, object bg_obj):

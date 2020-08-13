@@ -828,11 +828,11 @@ static const char *__pyx_f[] = {
 /*--- Type declarations ---*/
 struct __pyx_obj_9bulletsCy_Craft1Bullet;
 
-/* "bulletsCy.pyx":31
+/* "bulletsCy.pyx":32
  * 
  * 
  * cdef class Craft1Bullet:             # <<<<<<<<<<<<<<
- *     cdef public int power, rad
+ *     cdef public int power, rad, rad_init
  *     cdef public tuple vel, color
  */
 struct __pyx_obj_9bulletsCy_Craft1Bullet {
@@ -840,13 +840,17 @@ struct __pyx_obj_9bulletsCy_Craft1Bullet {
   struct __pyx_vtabstruct_9bulletsCy_Craft1Bullet *__pyx_vtab;
   int power;
   int rad;
+  int rad_init;
   PyObject *vel;
   PyObject *color;
   PyObject *mask;
+  PyObject *rect;
   PyObject *pos;
+  PyObject *pos_init;
   PyObject *outline;
   PyObject *outline_pos;
   int exist;
+  int puffed;
 };
 
 
@@ -1161,6 +1165,17 @@ static int __Pyx_SetItemInt_Generic(PyObject *o, PyObject *j, PyObject *v);
 static CYTHON_INLINE int __Pyx_SetItemInt_Fast(PyObject *o, Py_ssize_t i, PyObject *v,
                                                int is_list, int wraparound, int boundscheck);
 
+/* PyIntBinop.proto */
+#if !CYTHON_COMPILING_IN_PYPY
+static PyObject* __Pyx_PyInt_SubtractObjC(PyObject *op1, PyObject *op2, long intval, int inplace, int zerodivision_check);
+#else
+#define __Pyx_PyInt_SubtractObjC(op1, op2, intval, inplace, zerodivision_check)\
+    (inplace ? PyNumber_InPlaceSubtract(op1, op2) : PyNumber_Subtract(op1, op2))
+#endif
+
+/* None.proto */
+static CYTHON_INLINE long __Pyx_div_long(long, long);
+
 /* PyErrExceptionMatches.proto */
 #if CYTHON_FAST_THREAD_STATE
 #define __Pyx_PyErr_ExceptionMatches(err) __Pyx_PyErr_ExceptionMatchesInState(__pyx_tstate, err)
@@ -1366,11 +1381,13 @@ extern int __pyx_module_is_main_bulletsCy;
 int __pyx_module_is_main_bulletsCy = 0;
 
 /* Implementation of 'bulletsCy' */
+static PyObject *__pyx_builtin_round;
 static const char __pyx_k_pt[] = "pt";
 static const char __pyx_k_doc[] = "__doc__";
 static const char __pyx_k_new[] = "__new__";
 static const char __pyx_k_pos[] = "pos";
 static const char __pyx_k_rad[] = "rad";
+static const char __pyx_k_Rect[] = "Rect";
 static const char __pyx_k_dict[] = "__dict__";
 static const char __pyx_k_draw[] = "draw";
 static const char __pyx_k_fill[] = "fill";
@@ -1379,16 +1396,19 @@ static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_mask[] = "mask";
 static const char __pyx_k_move[] = "move";
 static const char __pyx_k_name[] = "__name__";
+static const char __pyx_k_rect[] = "rect";
 static const char __pyx_k_self[] = "self";
 static const char __pyx_k_surf[] = "surf";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_exist[] = "exist";
 static const char __pyx_k_lines[] = "lines";
 static const char __pyx_k_power[] = "power";
+static const char __pyx_k_round[] = "round";
 static const char __pyx_k_Bullet[] = "Bullet";
 static const char __pyx_k_append[] = "append";
 static const char __pyx_k_circle[] = "circle";
 static const char __pyx_k_import[] = "__import__";
+static const char __pyx_k_midtop[] = "midtop";
 static const char __pyx_k_module[] = "__module__";
 static const char __pyx_k_pickle[] = "pickle";
 static const char __pyx_k_pygame[] = "pygame";
@@ -1427,12 +1447,13 @@ static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_pyx_unpickle_Craft1Bullet[] = "__pyx_unpickle_Craft1Bullet";
-static const char __pyx_k_Incompatible_checksums_s_vs_0x91[] = "Incompatible checksums (%s vs 0x91745cb = (color, exist, mask, outline, outline_pos, pos, power, rad, vel))";
+static const char __pyx_k_Incompatible_checksums_s_vs_0x9f[] = "Incompatible checksums (%s vs 0x9f70006 = (color, exist, mask, outline, outline_pos, pos, pos_init, power, puffed, rad, rad_init, rect, vel))";
 static PyObject *__pyx_n_s_Bullet;
 static PyObject *__pyx_n_s_Bullet___init;
 static PyObject *__pyx_n_s_Craft1Bullet;
-static PyObject *__pyx_kp_s_Incompatible_checksums_s_vs_0x91;
+static PyObject *__pyx_kp_s_Incompatible_checksums_s_vs_0x9f;
 static PyObject *__pyx_n_s_PickleError;
+static PyObject *__pyx_n_s_Rect;
 static PyObject *__pyx_n_s_Surface;
 static PyObject *__pyx_n_s_append;
 static PyObject *__pyx_n_s_bulletsCy;
@@ -1455,6 +1476,7 @@ static PyObject *__pyx_n_s_lines;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_mask;
 static PyObject *__pyx_n_s_metaclass;
+static PyObject *__pyx_n_s_midtop;
 static PyObject *__pyx_n_s_module;
 static PyObject *__pyx_n_s_move;
 static PyObject *__pyx_n_s_name;
@@ -1476,9 +1498,11 @@ static PyObject *__pyx_n_s_pyx_unpickle_Craft1Bullet;
 static PyObject *__pyx_n_s_pyx_vtable;
 static PyObject *__pyx_n_s_qualname;
 static PyObject *__pyx_n_s_rad;
+static PyObject *__pyx_n_s_rect;
 static PyObject *__pyx_n_s_reduce;
 static PyObject *__pyx_n_s_reduce_cython;
 static PyObject *__pyx_n_s_reduce_ex;
+static PyObject *__pyx_n_s_round;
 static PyObject *__pyx_n_s_self;
 static PyObject *__pyx_n_s_set_colorkey;
 static PyObject *__pyx_n_s_setstate;
@@ -1500,6 +1524,8 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_5power___get__(struct __pyx_
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_5power_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_3rad___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_3rad_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_8rad_init___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_8rad_init_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_3vel___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_3vel_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_3vel_4__del__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
@@ -1509,9 +1535,15 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_5color_4__del__(struct __pyx_obj_9
 static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_4mask___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_4mask_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_4mask_4__del__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_4rect___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_4rect_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_4rect_4__del__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_3pos___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_3pos_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_3pos_4__del__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_8pos_init___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_8pos_init_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_8pos_init_4__del__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_7outline___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_7outline_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_7outline_4__del__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
@@ -1520,15 +1552,19 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_11outline_pos_2__set__(struct __py
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_11outline_pos_4__del__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_5exist___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
 static int __pyx_pf_9bulletsCy_12Craft1Bullet_5exist_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
+static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_6puffed___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_6puffed_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_10__reduce_cython__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_12__setstate_cython__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_9bulletsCy___pyx_unpickle_Craft1Bullet(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_tp_new_9bulletsCy_Craft1Bullet(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_int_0;
+static PyObject *__pyx_int_1;
+static PyObject *__pyx_int_40;
 static PyObject *__pyx_int_55;
 static PyObject *__pyx_int_205;
 static PyObject *__pyx_int_255;
-static PyObject *__pyx_int_152520139;
+static PyObject *__pyx_int_167182342;
 static PyObject *__pyx_int_neg_5;
 static PyObject *__pyx_k_;
 static PyObject *__pyx_tuple__2;
@@ -1538,14 +1574,15 @@ static PyObject *__pyx_tuple__5;
 static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__8;
-static PyObject *__pyx_tuple__10;
-static PyObject *__pyx_codeobj__9;
-static PyObject *__pyx_codeobj__11;
+static PyObject *__pyx_tuple__9;
+static PyObject *__pyx_tuple__11;
+static PyObject *__pyx_codeobj__10;
+static PyObject *__pyx_codeobj__12;
 /* Late includes */
 
-/* "bulletsCy.pyx":16
+/* "bulletsCy.pyx":17
  * surf.set_colorkey((0,0,0,0))
- * class Bullet():
+ * class Bullet:
  *     def __init__(self):             # <<<<<<<<<<<<<<
  *         cdef object mask
  *         cdef list outline, outline_pos
@@ -1582,19 +1619,19 @@ static PyObject *__pyx_pf_9bulletsCy_6Bullet___init__(CYTHON_UNUSED PyObject *__
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "bulletsCy.pyx":21
+  /* "bulletsCy.pyx":22
  *         cdef bint exist
  * 
  *         self.mask = pygame.mask.from_surface(surf)             # <<<<<<<<<<<<<<
  * 
  *         self.outline = []
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_mask); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_mask); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_from_surface); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 21, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_from_surface); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -1609,34 +1646,34 @@ static PyObject *__pyx_pf_9bulletsCy_6Bullet___init__(CYTHON_UNUSED PyObject *__
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_v_9bulletsCy_surf) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_9bulletsCy_surf);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 21, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_mask, __pyx_t_1) < 0) __PYX_ERR(0, 21, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_mask, __pyx_t_1) < 0) __PYX_ERR(0, 22, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "bulletsCy.pyx":23
+  /* "bulletsCy.pyx":24
  *         self.mask = pygame.mask.from_surface(surf)
  * 
  *         self.outline = []             # <<<<<<<<<<<<<<
  *         for pt in self.mask.outline():
  *             self.outline.append((pt[0], pt[1]))
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 23, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_outline, __pyx_t_1) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_outline, __pyx_t_1) < 0) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "bulletsCy.pyx":24
+  /* "bulletsCy.pyx":25
  * 
  *         self.outline = []
  *         for pt in self.mask.outline():             # <<<<<<<<<<<<<<
  *             self.outline.append((pt[0], pt[1]))
  *         self.outline_pos = []
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mask); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 24, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_mask); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 25, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_outline); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 24, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_outline); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 25, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -1651,16 +1688,16 @@ static PyObject *__pyx_pf_9bulletsCy_6Bullet___init__(CYTHON_UNUSED PyObject *__
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
     __pyx_t_3 = __pyx_t_1; __Pyx_INCREF(__pyx_t_3); __pyx_t_4 = 0;
     __pyx_t_5 = NULL;
   } else {
-    __pyx_t_4 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 24, __pyx_L1_error)
+    __pyx_t_4 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 25, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_5 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 24, __pyx_L1_error)
+    __pyx_t_5 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 25, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   for (;;) {
@@ -1668,17 +1705,17 @@ static PyObject *__pyx_pf_9bulletsCy_6Bullet___init__(CYTHON_UNUSED PyObject *__
       if (likely(PyList_CheckExact(__pyx_t_3))) {
         if (__pyx_t_4 >= PyList_GET_SIZE(__pyx_t_3)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) __PYX_ERR(0, 24, __pyx_L1_error)
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) __PYX_ERR(0, 25, __pyx_L1_error)
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_3, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_3, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       } else {
         if (__pyx_t_4 >= PyTuple_GET_SIZE(__pyx_t_3)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) __PYX_ERR(0, 24, __pyx_L1_error)
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) __PYX_ERR(0, 25, __pyx_L1_error)
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_3, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_3, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       }
@@ -1688,7 +1725,7 @@ static PyObject *__pyx_pf_9bulletsCy_6Bullet___init__(CYTHON_UNUSED PyObject *__
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 24, __pyx_L1_error)
+          else __PYX_ERR(0, 25, __pyx_L1_error)
         }
         break;
       }
@@ -1697,20 +1734,20 @@ static PyObject *__pyx_pf_9bulletsCy_6Bullet___init__(CYTHON_UNUSED PyObject *__
     __Pyx_XDECREF_SET(__pyx_v_pt, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "bulletsCy.pyx":25
+    /* "bulletsCy.pyx":26
  *         self.outline = []
  *         for pt in self.mask.outline():
  *             self.outline.append((pt[0], pt[1]))             # <<<<<<<<<<<<<<
  *         self.outline_pos = []
  * 
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_outline); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 25, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_outline); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 26, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_pt, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 25, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_pt, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 26, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_pt, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 25, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_pt, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 26, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
-    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 25, __pyx_L1_error)
+    __pyx_t_7 = PyTuple_New(2); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 26, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_GIVEREF(__pyx_t_2);
     PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_2);
@@ -1718,11 +1755,11 @@ static PyObject *__pyx_pf_9bulletsCy_6Bullet___init__(CYTHON_UNUSED PyObject *__
     PyTuple_SET_ITEM(__pyx_t_7, 1, __pyx_t_6);
     __pyx_t_2 = 0;
     __pyx_t_6 = 0;
-    __pyx_t_8 = __Pyx_PyObject_Append(__pyx_t_1, __pyx_t_7); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(0, 25, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_Append(__pyx_t_1, __pyx_t_7); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(0, 26, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-    /* "bulletsCy.pyx":24
+    /* "bulletsCy.pyx":25
  * 
  *         self.outline = []
  *         for pt in self.mask.outline():             # <<<<<<<<<<<<<<
@@ -1732,30 +1769,30 @@ static PyObject *__pyx_pf_9bulletsCy_6Bullet___init__(CYTHON_UNUSED PyObject *__
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "bulletsCy.pyx":26
+  /* "bulletsCy.pyx":27
  *         for pt in self.mask.outline():
  *             self.outline.append((pt[0], pt[1]))
  *         self.outline_pos = []             # <<<<<<<<<<<<<<
  * 
  *         self.exist = True
  */
-  __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_t_3 = PyList_New(0); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 27, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_outline_pos, __pyx_t_3) < 0) __PYX_ERR(0, 26, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_outline_pos, __pyx_t_3) < 0) __PYX_ERR(0, 27, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "bulletsCy.pyx":28
+  /* "bulletsCy.pyx":29
  *         self.outline_pos = []
  * 
  *         self.exist = True             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_exist, Py_True) < 0) __PYX_ERR(0, 28, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_exist, Py_True) < 0) __PYX_ERR(0, 29, __pyx_L1_error)
 
-  /* "bulletsCy.pyx":16
+  /* "bulletsCy.pyx":17
  * surf.set_colorkey((0,0,0,0))
- * class Bullet():
+ * class Bullet:
  *     def __init__(self):             # <<<<<<<<<<<<<<
  *         cdef object mask
  *         cdef list outline, outline_pos
@@ -1779,12 +1816,12 @@ static PyObject *__pyx_pf_9bulletsCy_6Bullet___init__(CYTHON_UNUSED PyObject *__
   return __pyx_r;
 }
 
-/* "bulletsCy.pyx":38
- *     cdef public bint exist
+/* "bulletsCy.pyx":39
+ *     cdef public bint exist, puffed
  * 
  *     def __init__(self, list pos, int rad, int power, surf = surf):             # <<<<<<<<<<<<<<
+ *         self.exist = True
  *         self.power = power
- *         self.pos = pos
  */
 
 /* Python wrapper */
@@ -1828,13 +1865,13 @@ static int __pyx_pw_9bulletsCy_12Craft1Bullet_1__init__(PyObject *__pyx_v_self, 
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_rad)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 4, 1); __PYX_ERR(0, 38, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 4, 1); __PYX_ERR(0, 39, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_power)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 4, 2); __PYX_ERR(0, 38, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 4, 2); __PYX_ERR(0, 39, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
@@ -1844,7 +1881,7 @@ static int __pyx_pw_9bulletsCy_12Craft1Bullet_1__init__(PyObject *__pyx_v_self, 
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 38, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 39, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -1858,19 +1895,19 @@ static int __pyx_pw_9bulletsCy_12Craft1Bullet_1__init__(PyObject *__pyx_v_self, 
       }
     }
     __pyx_v_pos = ((PyObject*)values[0]);
-    __pyx_v_rad = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_rad == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 38, __pyx_L3_error)
-    __pyx_v_power = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_power == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 38, __pyx_L3_error)
+    __pyx_v_rad = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_rad == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 39, __pyx_L3_error)
+    __pyx_v_power = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_power == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 39, __pyx_L3_error)
     __pyx_v_surf = values[3];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 38, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 39, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("bulletsCy.Craft1Bullet.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_pos), (&PyList_Type), 1, "pos", 1))) __PYX_ERR(0, 38, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_pos), (&PyList_Type), 1, "pos", 1))) __PYX_ERR(0, 39, __pyx_L1_error)
   __pyx_r = __pyx_pf_9bulletsCy_12Craft1Bullet___init__(((struct __pyx_obj_9bulletsCy_Craft1Bullet *)__pyx_v_self), __pyx_v_pos, __pyx_v_rad, __pyx_v_power, __pyx_v_surf);
 
   /* function exit code */
@@ -1889,43 +1926,69 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet___init__(struct __pyx_obj_9bullets
   PyObject *__pyx_t_1 = NULL;
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
+  int __pyx_t_4;
   PyObject *__pyx_t_5 = NULL;
-  int __pyx_t_6;
-  PyObject *__pyx_t_7 = NULL;
-  Py_ssize_t __pyx_t_8;
-  PyObject *(*__pyx_t_9)(PyObject *);
-  int __pyx_t_10;
+  PyObject *__pyx_t_6 = NULL;
+  int __pyx_t_7;
+  PyObject *__pyx_t_8 = NULL;
+  Py_ssize_t __pyx_t_9;
+  PyObject *(*__pyx_t_10)(PyObject *);
+  int __pyx_t_11;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__init__", 0);
 
-  /* "bulletsCy.pyx":39
+  /* "bulletsCy.pyx":40
  * 
  *     def __init__(self, list pos, int rad, int power, surf = surf):
+ *         self.exist = True             # <<<<<<<<<<<<<<
+ *         self.power = power
+ *         self.pos_init = pos
+ */
+  __pyx_v_self->exist = 1;
+
+  /* "bulletsCy.pyx":41
+ *     def __init__(self, list pos, int rad, int power, surf = surf):
+ *         self.exist = True
  *         self.power = power             # <<<<<<<<<<<<<<
- *         self.pos = pos
- *         self.vel = (0,-5)
+ *         self.pos_init = pos
+ *         self.pos = pos*1
  */
   __pyx_v_self->power = __pyx_v_power;
 
-  /* "bulletsCy.pyx":40
- *     def __init__(self, list pos, int rad, int power, surf = surf):
+  /* "bulletsCy.pyx":42
+ *         self.exist = True
  *         self.power = power
- *         self.pos = pos             # <<<<<<<<<<<<<<
+ *         self.pos_init = pos             # <<<<<<<<<<<<<<
+ *         self.pos = pos*1
  *         self.vel = (0,-5)
- *         self.color = (255, 205, 55, 255)
  */
   __Pyx_INCREF(__pyx_v_pos);
   __Pyx_GIVEREF(__pyx_v_pos);
+  __Pyx_GOTREF(__pyx_v_self->pos_init);
+  __Pyx_DECREF(__pyx_v_self->pos_init);
+  __pyx_v_self->pos_init = __pyx_v_pos;
+
+  /* "bulletsCy.pyx":43
+ *         self.power = power
+ *         self.pos_init = pos
+ *         self.pos = pos*1             # <<<<<<<<<<<<<<
+ *         self.vel = (0,-5)
+ *         self.color = (255, 205, 55, 255)
+ */
+  __pyx_t_1 = PyNumber_Multiply(__pyx_v_pos, __pyx_int_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  if (!(likely(PyList_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 43, __pyx_L1_error)
+  __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v_self->pos);
   __Pyx_DECREF(__pyx_v_self->pos);
-  __pyx_v_self->pos = __pyx_v_pos;
+  __pyx_v_self->pos = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
 
-  /* "bulletsCy.pyx":41
- *         self.power = power
- *         self.pos = pos
+  /* "bulletsCy.pyx":44
+ *         self.pos_init = pos
+ *         self.pos = pos*1
  *         self.vel = (0,-5)             # <<<<<<<<<<<<<<
  *         self.color = (255, 205, 55, 255)
  *         self.rad = rad
@@ -1936,12 +1999,12 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet___init__(struct __pyx_obj_9bullets
   __Pyx_DECREF(__pyx_v_self->vel);
   __pyx_v_self->vel = __pyx_tuple__2;
 
-  /* "bulletsCy.pyx":42
- *         self.pos = pos
+  /* "bulletsCy.pyx":45
+ *         self.pos = pos*1
  *         self.vel = (0,-5)
  *         self.color = (255, 205, 55, 255)             # <<<<<<<<<<<<<<
  *         self.rad = rad
- * 
+ *         self.rad_init = 2
  */
   __Pyx_INCREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
@@ -1949,23 +2012,41 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet___init__(struct __pyx_obj_9bullets
   __Pyx_DECREF(__pyx_v_self->color);
   __pyx_v_self->color = __pyx_tuple__3;
 
-  /* "bulletsCy.pyx":43
+  /* "bulletsCy.pyx":46
  *         self.vel = (0,-5)
  *         self.color = (255, 205, 55, 255)
  *         self.rad = rad             # <<<<<<<<<<<<<<
- * 
- *         surf.fill((0,0,0,0))
+ *         self.rad_init = 2
+ *         self.puffed = False
  */
   __pyx_v_self->rad = __pyx_v_rad;
 
-  /* "bulletsCy.pyx":45
+  /* "bulletsCy.pyx":47
+ *         self.color = (255, 205, 55, 255)
  *         self.rad = rad
- * 
- *         surf.fill((0,0,0,0))             # <<<<<<<<<<<<<<
- *         pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
+ *         self.rad_init = 2             # <<<<<<<<<<<<<<
+ *         self.puffed = False
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_surf, __pyx_n_s_fill); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
+  __pyx_v_self->rad_init = 2;
+
+  /* "bulletsCy.pyx":48
+ *         self.rad = rad
+ *         self.rad_init = 2
+ *         self.puffed = False             # <<<<<<<<<<<<<<
+ * 
+ *         surf.fill((0,0,0,0))
+ */
+  __pyx_v_self->puffed = 0;
+
+  /* "bulletsCy.pyx":50
+ *         self.puffed = False
+ * 
+ *         surf.fill((0,0,0,0))             # <<<<<<<<<<<<<<
+ *         #pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
+ *         if self.rad > self.rad_init:
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_surf, __pyx_n_s_fill); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -1979,141 +2060,323 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet___init__(struct __pyx_obj_9bullets
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_tuple__4) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_tuple__4);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 45, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "bulletsCy.pyx":46
- * 
+  /* "bulletsCy.pyx":52
  *         surf.fill((0,0,0,0))
- *         pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)             # <<<<<<<<<<<<<<
+ *         #pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
+ *         if self.rad > self.rad_init:             # <<<<<<<<<<<<<<
+ *             pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
+ *         else:
+ */
+  __pyx_t_4 = ((__pyx_v_self->rad > __pyx_v_self->rad_init) != 0);
+  if (__pyx_t_4) {
+
+    /* "bulletsCy.pyx":53
+ *         #pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
+ *         if self.rad > self.rad_init:
+ *             pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)             # <<<<<<<<<<<<<<
+ *         else:
+ *             pygame.draw.circle(surf, (255,255,255,255), (self.rad_init, self.rad_init), self.rad_init)
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_draw); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_circle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_GIVEREF(__pyx_t_3);
+    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_3);
+    __Pyx_GIVEREF(__pyx_t_5);
+    PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_5);
+    __pyx_t_3 = 0;
+    __pyx_t_5 = 0;
+    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 53, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_3 = NULL;
+    __pyx_t_7 = 0;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_3)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_3);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+        __pyx_t_7 = 1;
+      }
+    }
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_2)) {
+      PyObject *__pyx_temp[5] = {__pyx_t_3, __pyx_v_surf, __pyx_tuple__5, __pyx_t_6, __pyx_t_5};
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_7, 4+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
+      PyObject *__pyx_temp[5] = {__pyx_t_3, __pyx_v_surf, __pyx_tuple__5, __pyx_t_6, __pyx_t_5};
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_7, 4+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    } else
+    #endif
+    {
+      __pyx_t_8 = PyTuple_New(4+__pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 53, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_8);
+      if (__pyx_t_3) {
+        __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_3); __pyx_t_3 = NULL;
+      }
+      __Pyx_INCREF(__pyx_v_surf);
+      __Pyx_GIVEREF(__pyx_v_surf);
+      PyTuple_SET_ITEM(__pyx_t_8, 0+__pyx_t_7, __pyx_v_surf);
+      __Pyx_INCREF(__pyx_tuple__5);
+      __Pyx_GIVEREF(__pyx_tuple__5);
+      PyTuple_SET_ITEM(__pyx_t_8, 1+__pyx_t_7, __pyx_tuple__5);
+      __Pyx_GIVEREF(__pyx_t_6);
+      PyTuple_SET_ITEM(__pyx_t_8, 2+__pyx_t_7, __pyx_t_6);
+      __Pyx_GIVEREF(__pyx_t_5);
+      PyTuple_SET_ITEM(__pyx_t_8, 3+__pyx_t_7, __pyx_t_5);
+      __pyx_t_6 = 0;
+      __pyx_t_5 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "bulletsCy.pyx":52
+ *         surf.fill((0,0,0,0))
+ *         #pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
+ *         if self.rad > self.rad_init:             # <<<<<<<<<<<<<<
+ *             pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
+ *         else:
+ */
+    goto __pyx_L3;
+  }
+
+  /* "bulletsCy.pyx":55
+ *             pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
+ *         else:
+ *             pygame.draw.circle(surf, (255,255,255,255), (self.rad_init, self.rad_init), self.rad_init)             # <<<<<<<<<<<<<<
+ *         '''if self.rad > 2:
+ *             rect_w = round(self.rad / 2)
+ */
+  /*else*/ {
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_draw); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 55, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_circle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_self->rad_init); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 55, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
+    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_self->rad_init); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 55, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 55, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __Pyx_GIVEREF(__pyx_t_8);
+    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_8);
+    __Pyx_GIVEREF(__pyx_t_5);
+    PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_5);
+    __pyx_t_8 = 0;
+    __pyx_t_5 = 0;
+    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_self->rad_init); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 55, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_8 = NULL;
+    __pyx_t_7 = 0;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_8)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_8);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+        __pyx_t_7 = 1;
+      }
+    }
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_2)) {
+      PyObject *__pyx_temp[5] = {__pyx_t_8, __pyx_v_surf, __pyx_tuple__5, __pyx_t_6, __pyx_t_5};
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_7, 4+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
+      PyObject *__pyx_temp[5] = {__pyx_t_8, __pyx_v_surf, __pyx_tuple__5, __pyx_t_6, __pyx_t_5};
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_7, 4+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+    } else
+    #endif
+    {
+      __pyx_t_3 = PyTuple_New(4+__pyx_t_7); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 55, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      if (__pyx_t_8) {
+        __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_8); __pyx_t_8 = NULL;
+      }
+      __Pyx_INCREF(__pyx_v_surf);
+      __Pyx_GIVEREF(__pyx_v_surf);
+      PyTuple_SET_ITEM(__pyx_t_3, 0+__pyx_t_7, __pyx_v_surf);
+      __Pyx_INCREF(__pyx_tuple__5);
+      __Pyx_GIVEREF(__pyx_tuple__5);
+      PyTuple_SET_ITEM(__pyx_t_3, 1+__pyx_t_7, __pyx_tuple__5);
+      __Pyx_GIVEREF(__pyx_t_6);
+      PyTuple_SET_ITEM(__pyx_t_3, 2+__pyx_t_7, __pyx_t_6);
+      __Pyx_GIVEREF(__pyx_t_5);
+      PyTuple_SET_ITEM(__pyx_t_3, 3+__pyx_t_7, __pyx_t_5);
+      __pyx_t_6 = 0;
+      __pyx_t_5 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  }
+  __pyx_L3:;
+
+  /* "bulletsCy.pyx":61
+ *             rect_w = 1
+ *         self.rect = pygame.Rect(0,0, rect_w, self.rad * 8)'''
+ *         self.rect = pygame.Rect(0,0, 1, self.rad_init * 8)             # <<<<<<<<<<<<<<
  * 
  *         self.mask = pygame.mask.from_surface(surf)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_draw); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_Rect); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_circle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_long((__pyx_v_self->rad_init * 8)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __Pyx_GIVEREF(__pyx_t_3);
-  PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3);
-  __Pyx_GIVEREF(__pyx_t_4);
-  PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_4);
-  __pyx_t_3 = 0;
-  __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 46, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_3 = NULL;
-  __pyx_t_6 = 0;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_3)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_3);
+  __pyx_t_5 = NULL;
+  __pyx_t_7 = 0;
+  if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_3);
+    if (likely(__pyx_t_5)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_5);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
-      __pyx_t_6 = 1;
+      __Pyx_DECREF_SET(__pyx_t_3, function);
+      __pyx_t_7 = 1;
     }
   }
   #if CYTHON_FAST_PYCALL
-  if (PyFunction_Check(__pyx_t_2)) {
-    PyObject *__pyx_temp[5] = {__pyx_t_3, __pyx_v_surf, __pyx_tuple__5, __pyx_t_5, __pyx_t_4};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 4+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (PyFunction_Check(__pyx_t_3)) {
+    PyObject *__pyx_temp[5] = {__pyx_t_5, __pyx_int_0, __pyx_int_0, __pyx_int_1, __pyx_t_2};
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_7, 4+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   } else
   #endif
   #if CYTHON_FAST_PYCCALL
-  if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
-    PyObject *__pyx_temp[5] = {__pyx_t_3, __pyx_v_surf, __pyx_tuple__5, __pyx_t_5, __pyx_t_4};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 4+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
+    PyObject *__pyx_temp[5] = {__pyx_t_5, __pyx_int_0, __pyx_int_0, __pyx_int_1, __pyx_t_2};
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_7, 4+__pyx_t_7); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   } else
   #endif
   {
-    __pyx_t_7 = PyTuple_New(4+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 46, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    if (__pyx_t_3) {
-      __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_3); __pyx_t_3 = NULL;
+    __pyx_t_6 = PyTuple_New(4+__pyx_t_7); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    if (__pyx_t_5) {
+      __Pyx_GIVEREF(__pyx_t_5); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_5); __pyx_t_5 = NULL;
     }
-    __Pyx_INCREF(__pyx_v_surf);
-    __Pyx_GIVEREF(__pyx_v_surf);
-    PyTuple_SET_ITEM(__pyx_t_7, 0+__pyx_t_6, __pyx_v_surf);
-    __Pyx_INCREF(__pyx_tuple__5);
-    __Pyx_GIVEREF(__pyx_tuple__5);
-    PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_6, __pyx_tuple__5);
-    __Pyx_GIVEREF(__pyx_t_5);
-    PyTuple_SET_ITEM(__pyx_t_7, 2+__pyx_t_6, __pyx_t_5);
-    __Pyx_GIVEREF(__pyx_t_4);
-    PyTuple_SET_ITEM(__pyx_t_7, 3+__pyx_t_6, __pyx_t_4);
-    __pyx_t_5 = 0;
-    __pyx_t_4 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
+    __Pyx_INCREF(__pyx_int_0);
+    __Pyx_GIVEREF(__pyx_int_0);
+    PyTuple_SET_ITEM(__pyx_t_6, 0+__pyx_t_7, __pyx_int_0);
+    __Pyx_INCREF(__pyx_int_0);
+    __Pyx_GIVEREF(__pyx_int_0);
+    PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_7, __pyx_int_0);
+    __Pyx_INCREF(__pyx_int_1);
+    __Pyx_GIVEREF(__pyx_int_1);
+    PyTuple_SET_ITEM(__pyx_t_6, 2+__pyx_t_7, __pyx_int_1);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_6, 3+__pyx_t_7, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 61, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   }
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_GIVEREF(__pyx_t_1);
+  __Pyx_GOTREF(__pyx_v_self->rect);
+  __Pyx_DECREF(__pyx_v_self->rect);
+  __pyx_v_self->rect = __pyx_t_1;
+  __pyx_t_1 = 0;
 
-  /* "bulletsCy.pyx":48
- *         pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
+  /* "bulletsCy.pyx":63
+ *         self.rect = pygame.Rect(0,0, 1, self.rad_init * 8)
  * 
  *         self.mask = pygame.mask.from_surface(surf)             # <<<<<<<<<<<<<<
- * 
  *         self.outline = []
+ *         for pt in self.mask.outline():
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 48, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_mask); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 48, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_7);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_from_surface); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 48, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = NULL;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_7)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_7);
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_pygame); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_mask); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_from_surface); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+  __pyx_t_6 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_3);
+    if (likely(__pyx_t_6)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_6);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __Pyx_DECREF_SET(__pyx_t_3, function);
     }
   }
-  __pyx_t_1 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_7, __pyx_v_surf) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_surf);
-  __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 48, __pyx_L1_error)
+  __pyx_t_1 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_6, __pyx_v_surf) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_surf);
+  __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 63, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v_self->mask);
   __Pyx_DECREF(__pyx_v_self->mask);
   __pyx_v_self->mask = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "bulletsCy.pyx":50
- *         self.mask = pygame.mask.from_surface(surf)
+  /* "bulletsCy.pyx":64
  * 
+ *         self.mask = pygame.mask.from_surface(surf)
  *         self.outline = []             # <<<<<<<<<<<<<<
  *         for pt in self.mask.outline():
  *             self.outline.append((pt[0], pt[1]))
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v_self->outline);
@@ -2121,65 +2384,65 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet___init__(struct __pyx_obj_9bullets
   __pyx_v_self->outline = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "bulletsCy.pyx":51
- * 
+  /* "bulletsCy.pyx":65
+ *         self.mask = pygame.mask.from_surface(surf)
  *         self.outline = []
  *         for pt in self.mask.outline():             # <<<<<<<<<<<<<<
  *             self.outline.append((pt[0], pt[1]))
- *         self.outline_pos = []
+ *         self.update_outline()
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->mask, __pyx_n_s_outline); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 51, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_7 = NULL;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_7)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_7);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->mask, __pyx_n_s_outline); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_6 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
+    __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_3);
+    if (likely(__pyx_t_6)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+      __Pyx_INCREF(__pyx_t_6);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __Pyx_DECREF_SET(__pyx_t_3, function);
     }
   }
-  __pyx_t_1 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 51, __pyx_L1_error)
+  __pyx_t_1 = (__pyx_t_6) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_6) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (likely(PyList_CheckExact(__pyx_t_1)) || PyTuple_CheckExact(__pyx_t_1)) {
-    __pyx_t_2 = __pyx_t_1; __Pyx_INCREF(__pyx_t_2); __pyx_t_8 = 0;
-    __pyx_t_9 = NULL;
+    __pyx_t_3 = __pyx_t_1; __Pyx_INCREF(__pyx_t_3); __pyx_t_9 = 0;
+    __pyx_t_10 = NULL;
   } else {
-    __pyx_t_8 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 51, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_9 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 51, __pyx_L1_error)
+    __pyx_t_9 = -1; __pyx_t_3 = PyObject_GetIter(__pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 65, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_10 = Py_TYPE(__pyx_t_3)->tp_iternext; if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 65, __pyx_L1_error)
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   for (;;) {
-    if (likely(!__pyx_t_9)) {
-      if (likely(PyList_CheckExact(__pyx_t_2))) {
-        if (__pyx_t_8 >= PyList_GET_SIZE(__pyx_t_2)) break;
+    if (likely(!__pyx_t_10)) {
+      if (likely(PyList_CheckExact(__pyx_t_3))) {
+        if (__pyx_t_9 >= PyList_GET_SIZE(__pyx_t_3)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_8); __Pyx_INCREF(__pyx_t_1); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 51, __pyx_L1_error)
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_9); __Pyx_INCREF(__pyx_t_1); __pyx_t_9++; if (unlikely(0 < 0)) __PYX_ERR(0, 65, __pyx_L1_error)
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 51, __pyx_L1_error)
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_3, __pyx_t_9); __pyx_t_9++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       } else {
-        if (__pyx_t_8 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
+        if (__pyx_t_9 >= PyTuple_GET_SIZE(__pyx_t_3)) break;
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_8); __Pyx_INCREF(__pyx_t_1); __pyx_t_8++; if (unlikely(0 < 0)) __PYX_ERR(0, 51, __pyx_L1_error)
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_3, __pyx_t_9); __Pyx_INCREF(__pyx_t_1); __pyx_t_9++; if (unlikely(0 < 0)) __PYX_ERR(0, 65, __pyx_L1_error)
         #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_2, __pyx_t_8); __pyx_t_8++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 51, __pyx_L1_error)
+        __pyx_t_1 = PySequence_ITEM(__pyx_t_3, __pyx_t_9); __pyx_t_9++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         #endif
       }
     } else {
-      __pyx_t_1 = __pyx_t_9(__pyx_t_2);
+      __pyx_t_1 = __pyx_t_10(__pyx_t_3);
       if (unlikely(!__pyx_t_1)) {
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 51, __pyx_L1_error)
+          else __PYX_ERR(0, 65, __pyx_L1_error)
         }
         break;
       }
@@ -2188,72 +2451,57 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet___init__(struct __pyx_obj_9bullets
     __Pyx_XDECREF_SET(__pyx_v_pt, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "bulletsCy.pyx":52
+    /* "bulletsCy.pyx":66
  *         self.outline = []
  *         for pt in self.mask.outline():
  *             self.outline.append((pt[0], pt[1]))             # <<<<<<<<<<<<<<
- *         self.outline_pos = []
+ *         self.update_outline()
  * 
  */
     if (unlikely(__pyx_v_self->outline == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "append");
-      __PYX_ERR(0, 52, __pyx_L1_error)
+      __PYX_ERR(0, 66, __pyx_L1_error)
     }
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_pt, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 52, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_pt, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 66, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_pt, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 52, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 52, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_pt, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 66, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
+    __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
     __Pyx_GIVEREF(__pyx_t_1);
-    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_1);
-    __Pyx_GIVEREF(__pyx_t_7);
-    PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_7);
+    PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
+    __Pyx_GIVEREF(__pyx_t_6);
+    PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_6);
     __pyx_t_1 = 0;
-    __pyx_t_7 = 0;
-    __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_self->outline, __pyx_t_4); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 52, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_6 = 0;
+    __pyx_t_11 = __Pyx_PyList_Append(__pyx_v_self->outline, __pyx_t_2); if (unlikely(__pyx_t_11 == ((int)-1))) __PYX_ERR(0, 66, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "bulletsCy.pyx":51
- * 
+    /* "bulletsCy.pyx":65
+ *         self.mask = pygame.mask.from_surface(surf)
  *         self.outline = []
  *         for pt in self.mask.outline():             # <<<<<<<<<<<<<<
  *             self.outline.append((pt[0], pt[1]))
- *         self.outline_pos = []
+ *         self.update_outline()
  */
   }
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "bulletsCy.pyx":53
+  /* "bulletsCy.pyx":67
  *         for pt in self.mask.outline():
  *             self.outline.append((pt[0], pt[1]))
- *         self.outline_pos = []             # <<<<<<<<<<<<<<
- * 
- *         self.exist = True
- */
-  __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  __Pyx_GOTREF(__pyx_v_self->outline_pos);
-  __Pyx_DECREF(__pyx_v_self->outline_pos);
-  __pyx_v_self->outline_pos = ((PyObject*)__pyx_t_2);
-  __pyx_t_2 = 0;
-
-  /* "bulletsCy.pyx":55
- *         self.outline_pos = []
- * 
- *         self.exist = True             # <<<<<<<<<<<<<<
+ *         self.update_outline()             # <<<<<<<<<<<<<<
  * 
  *     cpdef void draw(self, object bg_obj):
  */
-  __pyx_v_self->exist = 1;
+  ((struct __pyx_vtabstruct_9bulletsCy_Craft1Bullet *)__pyx_v_self->__pyx_vtab)->update_outline(__pyx_v_self, 0);
 
-  /* "bulletsCy.pyx":38
- *     cdef public bint exist
+  /* "bulletsCy.pyx":39
+ *     cdef public bint exist, puffed
  * 
  *     def __init__(self, list pos, int rad, int power, surf = surf):             # <<<<<<<<<<<<<<
+ *         self.exist = True
  *         self.power = power
- *         self.pos = pos
  */
 
   /* function exit code */
@@ -2263,9 +2511,9 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet___init__(struct __pyx_obj_9bullets
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_XDECREF(__pyx_t_8);
   __Pyx_AddTraceback("bulletsCy.Craft1Bullet.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
@@ -2274,12 +2522,12 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet___init__(struct __pyx_obj_9bullets
   return __pyx_r;
 }
 
-/* "bulletsCy.pyx":57
- *         self.exist = True
+/* "bulletsCy.pyx":69
+ *         self.update_outline()
  * 
  *     cpdef void draw(self, object bg_obj):             # <<<<<<<<<<<<<<
- *         pygame.draw.circle(bg_obj, self.color, self.pos, self.rad)
- * 
+ *         if self.puffed:
+ *             pygame.draw.circle(bg_obj, self.color, self.pos, self.rad)
  */
 
 static PyObject *__pyx_pw_9bulletsCy_12Craft1Bullet_3draw(PyObject *__pyx_v_self, PyObject *__pyx_v_bg_obj); /*proto*/
@@ -2290,7 +2538,8 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_draw(struct __pyx_obj_9bulletsCy_C
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
   int __pyx_t_5;
-  PyObject *__pyx_t_6 = NULL;
+  int __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2304,7 +2553,7 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_draw(struct __pyx_obj_9bulletsCy_C
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_draw); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_draw); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9bulletsCy_12Craft1Bullet_3draw)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -2320,7 +2569,7 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_draw(struct __pyx_obj_9bulletsCy_C
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_v_bg_obj) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_bg_obj);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 69, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -2340,84 +2589,179 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_draw(struct __pyx_obj_9bulletsCy_C
     #endif
   }
 
-  /* "bulletsCy.pyx":58
+  /* "bulletsCy.pyx":70
  * 
  *     cpdef void draw(self, object bg_obj):
- *         pygame.draw.circle(bg_obj, self.color, self.pos, self.rad)             # <<<<<<<<<<<<<<
+ *         if self.puffed:             # <<<<<<<<<<<<<<
+ *             pygame.draw.circle(bg_obj, self.color, self.pos, self.rad)
+ *         else:
+ */
+  __pyx_t_5 = (__pyx_v_self->puffed != 0);
+  if (__pyx_t_5) {
+
+    /* "bulletsCy.pyx":71
+ *     cpdef void draw(self, object bg_obj):
+ *         if self.puffed:
+ *             pygame.draw.circle(bg_obj, self.color, self.pos, self.rad)             # <<<<<<<<<<<<<<
+ *         else:
+ *             pygame.draw.circle(bg_obj, self.color, self.pos, self.rad_init)
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_draw); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_circle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = NULL;
+    __pyx_t_6 = 0;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+        __pyx_t_6 = 1;
+      }
+    }
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_2)) {
+      PyObject *__pyx_temp[5] = {__pyx_t_4, __pyx_v_bg_obj, __pyx_v_self->color, __pyx_v_self->pos, __pyx_t_3};
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 4+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
+      PyObject *__pyx_temp[5] = {__pyx_t_4, __pyx_v_bg_obj, __pyx_v_self->color, __pyx_v_self->pos, __pyx_t_3};
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 4+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    } else
+    #endif
+    {
+      __pyx_t_7 = PyTuple_New(4+__pyx_t_6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 71, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      if (__pyx_t_4) {
+        __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_4); __pyx_t_4 = NULL;
+      }
+      __Pyx_INCREF(__pyx_v_bg_obj);
+      __Pyx_GIVEREF(__pyx_v_bg_obj);
+      PyTuple_SET_ITEM(__pyx_t_7, 0+__pyx_t_6, __pyx_v_bg_obj);
+      __Pyx_INCREF(__pyx_v_self->color);
+      __Pyx_GIVEREF(__pyx_v_self->color);
+      PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_6, __pyx_v_self->color);
+      __Pyx_INCREF(__pyx_v_self->pos);
+      __Pyx_GIVEREF(__pyx_v_self->pos);
+      PyTuple_SET_ITEM(__pyx_t_7, 2+__pyx_t_6, __pyx_v_self->pos);
+      __Pyx_GIVEREF(__pyx_t_3);
+      PyTuple_SET_ITEM(__pyx_t_7, 3+__pyx_t_6, __pyx_t_3);
+      __pyx_t_3 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "bulletsCy.pyx":70
+ * 
+ *     cpdef void draw(self, object bg_obj):
+ *         if self.puffed:             # <<<<<<<<<<<<<<
+ *             pygame.draw.circle(bg_obj, self.color, self.pos, self.rad)
+ *         else:
+ */
+    goto __pyx_L3;
+  }
+
+  /* "bulletsCy.pyx":73
+ *             pygame.draw.circle(bg_obj, self.color, self.pos, self.rad)
+ *         else:
+ *             pygame.draw.circle(bg_obj, self.color, self.pos, self.rad_init)             # <<<<<<<<<<<<<<
  * 
  *     cpdef void draw_outline(self, object bg_obj):
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_draw); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 58, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_circle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 58, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 58, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = NULL;
-  __pyx_t_5 = 0;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_4)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_4);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
-      __pyx_t_5 = 1;
+  /*else*/ {
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 73, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_draw); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 73, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_circle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 73, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    __pyx_t_7 = __Pyx_PyInt_From_int(__pyx_v_self->rad_init); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 73, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_7);
+    __pyx_t_3 = NULL;
+    __pyx_t_6 = 0;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_3)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_3);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+        __pyx_t_6 = 1;
+      }
     }
-  }
-  #if CYTHON_FAST_PYCALL
-  if (PyFunction_Check(__pyx_t_2)) {
-    PyObject *__pyx_temp[5] = {__pyx_t_4, __pyx_v_bg_obj, __pyx_v_self->color, __pyx_v_self->pos, __pyx_t_3};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 4+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  } else
-  #endif
-  #if CYTHON_FAST_PYCCALL
-  if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
-    PyObject *__pyx_temp[5] = {__pyx_t_4, __pyx_v_bg_obj, __pyx_v_self->color, __pyx_v_self->pos, __pyx_t_3};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 4+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
-    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  } else
-  #endif
-  {
-    __pyx_t_6 = PyTuple_New(4+__pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 58, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_6);
-    if (__pyx_t_4) {
-      __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4); __pyx_t_4 = NULL;
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_2)) {
+      PyObject *__pyx_temp[5] = {__pyx_t_3, __pyx_v_bg_obj, __pyx_v_self->color, __pyx_v_self->pos, __pyx_t_7};
+      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 4+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
+      PyObject *__pyx_temp[5] = {__pyx_t_3, __pyx_v_bg_obj, __pyx_v_self->color, __pyx_v_self->pos, __pyx_t_7};
+      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 4+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+    } else
+    #endif
+    {
+      __pyx_t_4 = PyTuple_New(4+__pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 73, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      if (__pyx_t_3) {
+        __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
+      }
+      __Pyx_INCREF(__pyx_v_bg_obj);
+      __Pyx_GIVEREF(__pyx_v_bg_obj);
+      PyTuple_SET_ITEM(__pyx_t_4, 0+__pyx_t_6, __pyx_v_bg_obj);
+      __Pyx_INCREF(__pyx_v_self->color);
+      __Pyx_GIVEREF(__pyx_v_self->color);
+      PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_6, __pyx_v_self->color);
+      __Pyx_INCREF(__pyx_v_self->pos);
+      __Pyx_GIVEREF(__pyx_v_self->pos);
+      PyTuple_SET_ITEM(__pyx_t_4, 2+__pyx_t_6, __pyx_v_self->pos);
+      __Pyx_GIVEREF(__pyx_t_7);
+      PyTuple_SET_ITEM(__pyx_t_4, 3+__pyx_t_6, __pyx_t_7);
+      __pyx_t_7 = 0;
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
-    __Pyx_INCREF(__pyx_v_bg_obj);
-    __Pyx_GIVEREF(__pyx_v_bg_obj);
-    PyTuple_SET_ITEM(__pyx_t_6, 0+__pyx_t_5, __pyx_v_bg_obj);
-    __Pyx_INCREF(__pyx_v_self->color);
-    __Pyx_GIVEREF(__pyx_v_self->color);
-    PyTuple_SET_ITEM(__pyx_t_6, 1+__pyx_t_5, __pyx_v_self->color);
-    __Pyx_INCREF(__pyx_v_self->pos);
-    __Pyx_GIVEREF(__pyx_v_self->pos);
-    PyTuple_SET_ITEM(__pyx_t_6, 2+__pyx_t_5, __pyx_v_self->pos);
-    __Pyx_GIVEREF(__pyx_t_3);
-    PyTuple_SET_ITEM(__pyx_t_6, 3+__pyx_t_5, __pyx_t_3);
-    __pyx_t_3 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 58, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_L3:;
 
-  /* "bulletsCy.pyx":57
- *         self.exist = True
+  /* "bulletsCy.pyx":69
+ *         self.update_outline()
  * 
  *     cpdef void draw(self, object bg_obj):             # <<<<<<<<<<<<<<
- *         pygame.draw.circle(bg_obj, self.color, self.pos, self.rad)
- * 
+ *         if self.puffed:
+ *             pygame.draw.circle(bg_obj, self.color, self.pos, self.rad)
  */
 
   /* function exit code */
@@ -2427,7 +2771,7 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_draw(struct __pyx_obj_9bulletsCy_C
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_6);
+  __Pyx_XDECREF(__pyx_t_7);
   __Pyx_WriteUnraisable("bulletsCy.Craft1Bullet.draw", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -2455,7 +2799,7 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_2draw(struct __pyx_obj_9bull
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("draw", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9bulletsCy_12Craft1Bullet_draw(__pyx_v_self, __pyx_v_bg_obj, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9bulletsCy_12Craft1Bullet_draw(__pyx_v_self, __pyx_v_bg_obj, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -2472,12 +2816,12 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_2draw(struct __pyx_obj_9bull
   return __pyx_r;
 }
 
-/* "bulletsCy.pyx":60
- *         pygame.draw.circle(bg_obj, self.color, self.pos, self.rad)
+/* "bulletsCy.pyx":75
+ *             pygame.draw.circle(bg_obj, self.color, self.pos, self.rad_init)
  * 
  *     cpdef void draw_outline(self, object bg_obj):             # <<<<<<<<<<<<<<
- *         if self.outline_pos:
- *             pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)
+ *         pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)
+ *         pygame.draw.rect(bg_obj, (255,0,0), self.rect, 1)
  */
 
 static PyObject *__pyx_pw_9bulletsCy_12Craft1Bullet_5draw_outline(PyObject *__pyx_v_self, PyObject *__pyx_v_bg_obj); /*proto*/
@@ -2488,7 +2832,6 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_draw_outline(struct __pyx_obj_9bul
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
   int __pyx_t_5;
-  int __pyx_t_6;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2502,7 +2845,7 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_draw_outline(struct __pyx_obj_9bul
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_draw_outline); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 60, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_draw_outline); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 75, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9bulletsCy_12Craft1Bullet_5draw_outline)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -2518,7 +2861,7 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_draw_outline(struct __pyx_obj_9bul
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_v_bg_obj) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_bg_obj);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 60, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 75, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -2538,99 +2881,148 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_draw_outline(struct __pyx_obj_9bul
     #endif
   }
 
-  /* "bulletsCy.pyx":61
+  /* "bulletsCy.pyx":76
  * 
  *     cpdef void draw_outline(self, object bg_obj):
- *         if self.outline_pos:             # <<<<<<<<<<<<<<
- *             pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)
+ *         pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)             # <<<<<<<<<<<<<<
+ *         pygame.draw.rect(bg_obj, (255,0,0), self.rect, 1)
  * 
  */
-  __pyx_t_5 = (__pyx_v_self->outline_pos != Py_None)&&(PyList_GET_SIZE(__pyx_v_self->outline_pos) != 0);
-  if (__pyx_t_5) {
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 76, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_draw); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 76, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_lines); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 76, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = NULL;
+  __pyx_t_5 = 0;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __pyx_t_5 = 1;
+    }
+  }
+  #if CYTHON_FAST_PYCALL
+  if (PyFunction_Check(__pyx_t_2)) {
+    PyObject *__pyx_temp[5] = {__pyx_t_3, __pyx_v_bg_obj, __pyx_tuple__6, Py_True, __pyx_v_self->outline_pos};
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 4+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_GOTREF(__pyx_t_1);
+  } else
+  #endif
+  #if CYTHON_FAST_PYCCALL
+  if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
+    PyObject *__pyx_temp[5] = {__pyx_t_3, __pyx_v_bg_obj, __pyx_tuple__6, Py_True, __pyx_v_self->outline_pos};
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 4+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_GOTREF(__pyx_t_1);
+  } else
+  #endif
+  {
+    __pyx_t_4 = PyTuple_New(4+__pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 76, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    if (__pyx_t_3) {
+      __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
+    }
+    __Pyx_INCREF(__pyx_v_bg_obj);
+    __Pyx_GIVEREF(__pyx_v_bg_obj);
+    PyTuple_SET_ITEM(__pyx_t_4, 0+__pyx_t_5, __pyx_v_bg_obj);
+    __Pyx_INCREF(__pyx_tuple__6);
+    __Pyx_GIVEREF(__pyx_tuple__6);
+    PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_5, __pyx_tuple__6);
+    __Pyx_INCREF(Py_True);
+    __Pyx_GIVEREF(Py_True);
+    PyTuple_SET_ITEM(__pyx_t_4, 2+__pyx_t_5, Py_True);
+    __Pyx_INCREF(__pyx_v_self->outline_pos);
+    __Pyx_GIVEREF(__pyx_v_self->outline_pos);
+    PyTuple_SET_ITEM(__pyx_t_4, 3+__pyx_t_5, __pyx_v_self->outline_pos);
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  }
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "bulletsCy.pyx":62
+  /* "bulletsCy.pyx":77
  *     cpdef void draw_outline(self, object bg_obj):
- *         if self.outline_pos:
- *             pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)             # <<<<<<<<<<<<<<
+ *         pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)
+ *         pygame.draw.rect(bg_obj, (255,0,0), self.rect, 1)             # <<<<<<<<<<<<<<
  * 
  *     cpdef void move(self):
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_draw); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 62, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_lines); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = NULL;
-    __pyx_t_6 = 0;
-    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
-      __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
-      if (likely(__pyx_t_3)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-        __Pyx_INCREF(__pyx_t_3);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_2, function);
-        __pyx_t_6 = 1;
-      }
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pygame); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_draw); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 77, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_rect); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_4 = NULL;
+  __pyx_t_5 = 0;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_4)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __pyx_t_5 = 1;
     }
-    #if CYTHON_FAST_PYCALL
-    if (PyFunction_Check(__pyx_t_2)) {
-      PyObject *__pyx_temp[5] = {__pyx_t_3, __pyx_v_bg_obj, __pyx_tuple__6, Py_True, __pyx_v_self->outline_pos};
-      __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 4+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
-      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __Pyx_GOTREF(__pyx_t_1);
-    } else
-    #endif
-    #if CYTHON_FAST_PYCCALL
-    if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
-      PyObject *__pyx_temp[5] = {__pyx_t_3, __pyx_v_bg_obj, __pyx_tuple__6, Py_True, __pyx_v_self->outline_pos};
-      __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_6, 4+__pyx_t_6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
-      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __Pyx_GOTREF(__pyx_t_1);
-    } else
-    #endif
-    {
-      __pyx_t_4 = PyTuple_New(4+__pyx_t_6); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 62, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_4);
-      if (__pyx_t_3) {
-        __Pyx_GIVEREF(__pyx_t_3); PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_3); __pyx_t_3 = NULL;
-      }
-      __Pyx_INCREF(__pyx_v_bg_obj);
-      __Pyx_GIVEREF(__pyx_v_bg_obj);
-      PyTuple_SET_ITEM(__pyx_t_4, 0+__pyx_t_6, __pyx_v_bg_obj);
-      __Pyx_INCREF(__pyx_tuple__6);
-      __Pyx_GIVEREF(__pyx_tuple__6);
-      PyTuple_SET_ITEM(__pyx_t_4, 1+__pyx_t_6, __pyx_tuple__6);
-      __Pyx_INCREF(Py_True);
-      __Pyx_GIVEREF(Py_True);
-      PyTuple_SET_ITEM(__pyx_t_4, 2+__pyx_t_6, Py_True);
-      __Pyx_INCREF(__pyx_v_self->outline_pos);
-      __Pyx_GIVEREF(__pyx_v_self->outline_pos);
-      PyTuple_SET_ITEM(__pyx_t_4, 3+__pyx_t_6, __pyx_v_self->outline_pos);
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    }
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-    /* "bulletsCy.pyx":61
- * 
- *     cpdef void draw_outline(self, object bg_obj):
- *         if self.outline_pos:             # <<<<<<<<<<<<<<
- *             pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)
- * 
- */
   }
+  #if CYTHON_FAST_PYCALL
+  if (PyFunction_Check(__pyx_t_2)) {
+    PyObject *__pyx_temp[5] = {__pyx_t_4, __pyx_v_bg_obj, __pyx_tuple__7, __pyx_v_self->rect, __pyx_int_1};
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 4+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_GOTREF(__pyx_t_1);
+  } else
+  #endif
+  #if CYTHON_FAST_PYCCALL
+  if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
+    PyObject *__pyx_temp[5] = {__pyx_t_4, __pyx_v_bg_obj, __pyx_tuple__7, __pyx_v_self->rect, __pyx_int_1};
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_5, 4+__pyx_t_5); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __Pyx_GOTREF(__pyx_t_1);
+  } else
+  #endif
+  {
+    __pyx_t_3 = PyTuple_New(4+__pyx_t_5); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 77, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    if (__pyx_t_4) {
+      __Pyx_GIVEREF(__pyx_t_4); PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4); __pyx_t_4 = NULL;
+    }
+    __Pyx_INCREF(__pyx_v_bg_obj);
+    __Pyx_GIVEREF(__pyx_v_bg_obj);
+    PyTuple_SET_ITEM(__pyx_t_3, 0+__pyx_t_5, __pyx_v_bg_obj);
+    __Pyx_INCREF(__pyx_tuple__7);
+    __Pyx_GIVEREF(__pyx_tuple__7);
+    PyTuple_SET_ITEM(__pyx_t_3, 1+__pyx_t_5, __pyx_tuple__7);
+    __Pyx_INCREF(__pyx_v_self->rect);
+    __Pyx_GIVEREF(__pyx_v_self->rect);
+    PyTuple_SET_ITEM(__pyx_t_3, 2+__pyx_t_5, __pyx_v_self->rect);
+    __Pyx_INCREF(__pyx_int_1);
+    __Pyx_GIVEREF(__pyx_int_1);
+    PyTuple_SET_ITEM(__pyx_t_3, 3+__pyx_t_5, __pyx_int_1);
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  }
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "bulletsCy.pyx":60
- *         pygame.draw.circle(bg_obj, self.color, self.pos, self.rad)
+  /* "bulletsCy.pyx":75
+ *             pygame.draw.circle(bg_obj, self.color, self.pos, self.rad_init)
  * 
  *     cpdef void draw_outline(self, object bg_obj):             # <<<<<<<<<<<<<<
- *         if self.outline_pos:
- *             pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)
+ *         pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)
+ *         pygame.draw.rect(bg_obj, (255,0,0), self.rect, 1)
  */
 
   /* function exit code */
@@ -2667,7 +3059,7 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_4draw_outline(struct __pyx_o
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("draw_outline", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9bulletsCy_12Craft1Bullet_draw_outline(__pyx_v_self, __pyx_v_bg_obj, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 60, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9bulletsCy_12Craft1Bullet_draw_outline(__pyx_v_self, __pyx_v_bg_obj, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 75, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -2684,8 +3076,8 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_4draw_outline(struct __pyx_o
   return __pyx_r;
 }
 
-/* "bulletsCy.pyx":64
- *             pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)
+/* "bulletsCy.pyx":79
+ *         pygame.draw.rect(bg_obj, (255,0,0), self.rect, 1)
  * 
  *     cpdef void move(self):             # <<<<<<<<<<<<<<
  *         self.pos[0] += self.vel[0]
@@ -2701,6 +3093,11 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_move(struct __pyx_obj_9bulletsCy_C
   PyObject *__pyx_t_4 = NULL;
   PyObject *__pyx_t_5 = NULL;
   Py_ssize_t __pyx_t_6;
+  int __pyx_t_7;
+  int __pyx_t_8;
+  PyObject *__pyx_t_9 = NULL;
+  int __pyx_t_10;
+  PyObject *__pyx_t_11 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -2714,7 +3111,7 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_move(struct __pyx_obj_9bulletsCy_C
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_move); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_move); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9bulletsCy_12Craft1Bullet_7move)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -2730,7 +3127,7 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_move(struct __pyx_obj_9bulletsCy_C
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -2750,84 +3147,243 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_move(struct __pyx_obj_9bulletsCy_C
     #endif
   }
 
-  /* "bulletsCy.pyx":65
+  /* "bulletsCy.pyx":80
  * 
  *     cpdef void move(self):
  *         self.pos[0] += self.vel[0]             # <<<<<<<<<<<<<<
  *         self.pos[1] += self.vel[1]
- * 
+ *         if not self.puffed and (self.rad > self.rad_init) and (self.pos[1] + self.rad < self.pos_init[1] - 40):
  */
   if (unlikely(__pyx_v_self->pos == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 65, __pyx_L1_error)
+    __PYX_ERR(0, 80, __pyx_L1_error)
   }
   __Pyx_INCREF(__pyx_v_self->pos);
   __pyx_t_5 = __pyx_v_self->pos;
   __pyx_t_6 = 0;
   if (unlikely(__pyx_t_5 == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 65, __pyx_L1_error)
+    __PYX_ERR(0, 80, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_t_5, __pyx_t_6, Py_ssize_t, 1, PyInt_FromSsize_t, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_t_5, __pyx_t_6, Py_ssize_t, 1, PyInt_FromSsize_t, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (unlikely(__pyx_v_self->vel == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 65, __pyx_L1_error)
+    __PYX_ERR(0, 80, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_GetItemInt_Tuple(__pyx_v_self->vel, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetItemInt_Tuple(__pyx_v_self->vel, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyNumber_InPlaceAdd(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 65, __pyx_L1_error)
+  __pyx_t_3 = PyNumber_InPlaceAdd(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (unlikely(__pyx_t_5 == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 65, __pyx_L1_error)
+    __PYX_ERR(0, 80, __pyx_L1_error)
   }
-  if (unlikely(__Pyx_SetItemInt(__pyx_t_5, __pyx_t_6, __pyx_t_3, Py_ssize_t, 1, PyInt_FromSsize_t, 1, 1, 1) < 0)) __PYX_ERR(0, 65, __pyx_L1_error)
+  if (unlikely(__Pyx_SetItemInt(__pyx_t_5, __pyx_t_6, __pyx_t_3, Py_ssize_t, 1, PyInt_FromSsize_t, 1, 1, 1) < 0)) __PYX_ERR(0, 80, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "bulletsCy.pyx":66
+  /* "bulletsCy.pyx":81
  *     cpdef void move(self):
  *         self.pos[0] += self.vel[0]
  *         self.pos[1] += self.vel[1]             # <<<<<<<<<<<<<<
- * 
- *     cpdef void update_outline(self):
+ *         if not self.puffed and (self.rad > self.rad_init) and (self.pos[1] + self.rad < self.pos_init[1] - 40):
+ *             self.rect = pygame.Rect(0,0, round(self.rad / 2), self.rad * 8)
  */
   if (unlikely(__pyx_v_self->pos == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 66, __pyx_L1_error)
+    __PYX_ERR(0, 81, __pyx_L1_error)
   }
   __Pyx_INCREF(__pyx_v_self->pos);
   __pyx_t_5 = __pyx_v_self->pos;
   __pyx_t_6 = 1;
   if (unlikely(__pyx_t_5 == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 66, __pyx_L1_error)
+    __PYX_ERR(0, 81, __pyx_L1_error)
   }
-  __pyx_t_3 = __Pyx_GetItemInt_List(__pyx_t_5, __pyx_t_6, Py_ssize_t, 1, PyInt_FromSsize_t, 1, 1, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 66, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt_List(__pyx_t_5, __pyx_t_6, Py_ssize_t, 1, PyInt_FromSsize_t, 1, 1, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 81, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   if (unlikely(__pyx_v_self->vel == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 66, __pyx_L1_error)
+    __PYX_ERR(0, 81, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_GetItemInt_Tuple(__pyx_v_self->vel, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetItemInt_Tuple(__pyx_v_self->vel, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 81, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = PyNumber_InPlaceAdd(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 66, __pyx_L1_error)
+  __pyx_t_1 = PyNumber_InPlaceAdd(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (unlikely(__pyx_t_5 == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 66, __pyx_L1_error)
+    __PYX_ERR(0, 81, __pyx_L1_error)
   }
-  if (unlikely(__Pyx_SetItemInt(__pyx_t_5, __pyx_t_6, __pyx_t_1, Py_ssize_t, 1, PyInt_FromSsize_t, 1, 1, 1) < 0)) __PYX_ERR(0, 66, __pyx_L1_error)
+  if (unlikely(__Pyx_SetItemInt(__pyx_t_5, __pyx_t_6, __pyx_t_1, Py_ssize_t, 1, PyInt_FromSsize_t, 1, 1, 1) < 0)) __PYX_ERR(0, 81, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "bulletsCy.pyx":64
- *             pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)
+  /* "bulletsCy.pyx":82
+ *         self.pos[0] += self.vel[0]
+ *         self.pos[1] += self.vel[1]
+ *         if not self.puffed and (self.rad > self.rad_init) and (self.pos[1] + self.rad < self.pos_init[1] - 40):             # <<<<<<<<<<<<<<
+ *             self.rect = pygame.Rect(0,0, round(self.rad / 2), self.rad * 8)
+ *             self.puffed = True
+ */
+  __pyx_t_8 = ((!(__pyx_v_self->puffed != 0)) != 0);
+  if (__pyx_t_8) {
+  } else {
+    __pyx_t_7 = __pyx_t_8;
+    goto __pyx_L4_bool_binop_done;
+  }
+  __pyx_t_8 = ((__pyx_v_self->rad > __pyx_v_self->rad_init) != 0);
+  if (__pyx_t_8) {
+  } else {
+    __pyx_t_7 = __pyx_t_8;
+    goto __pyx_L4_bool_binop_done;
+  }
+  if (unlikely(__pyx_v_self->pos == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    __PYX_ERR(0, 82, __pyx_L1_error)
+  }
+  __pyx_t_1 = __Pyx_GetItemInt_List(__pyx_v_self->pos, 1, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 82, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 82, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = PyNumber_Add(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 82, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (unlikely(__pyx_v_self->pos_init == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    __PYX_ERR(0, 82, __pyx_L1_error)
+  }
+  __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_self->pos_init, 1, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 82, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyInt_SubtractObjC(__pyx_t_2, __pyx_int_40, 40, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 82, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = PyObject_RichCompare(__pyx_t_3, __pyx_t_1, Py_LT); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 82, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_8 < 0)) __PYX_ERR(0, 82, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_7 = __pyx_t_8;
+  __pyx_L4_bool_binop_done:;
+  if (__pyx_t_7) {
+
+    /* "bulletsCy.pyx":83
+ *         self.pos[1] += self.vel[1]
+ *         if not self.puffed and (self.rad > self.rad_init) and (self.pos[1] + self.rad < self.pos_init[1] - 40):
+ *             self.rect = pygame.Rect(0,0, round(self.rad / 2), self.rad * 8)             # <<<<<<<<<<<<<<
+ *             self.puffed = True
+ *         self.rect.midtop = self.pos
+ */
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_pygame); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_Rect); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 83, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyInt_From_long(__Pyx_div_long(__pyx_v_self->rad, 2)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_round, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 83, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyInt_From_long((__pyx_v_self->rad * 8)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_9 = NULL;
+    __pyx_t_10 = 0;
+    if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+      __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_3);
+      if (likely(__pyx_t_9)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+        __Pyx_INCREF(__pyx_t_9);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_3, function);
+        __pyx_t_10 = 1;
+      }
+    }
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(__pyx_t_3)) {
+      PyObject *__pyx_temp[5] = {__pyx_t_9, __pyx_int_0, __pyx_int_0, __pyx_t_4, __pyx_t_1};
+      __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_10, 4+__pyx_t_10); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 83, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    } else
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
+      PyObject *__pyx_temp[5] = {__pyx_t_9, __pyx_int_0, __pyx_int_0, __pyx_t_4, __pyx_t_1};
+      __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_10, 4+__pyx_t_10); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 83, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    } else
+    #endif
+    {
+      __pyx_t_11 = PyTuple_New(4+__pyx_t_10); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 83, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_11);
+      if (__pyx_t_9) {
+        __Pyx_GIVEREF(__pyx_t_9); PyTuple_SET_ITEM(__pyx_t_11, 0, __pyx_t_9); __pyx_t_9 = NULL;
+      }
+      __Pyx_INCREF(__pyx_int_0);
+      __Pyx_GIVEREF(__pyx_int_0);
+      PyTuple_SET_ITEM(__pyx_t_11, 0+__pyx_t_10, __pyx_int_0);
+      __Pyx_INCREF(__pyx_int_0);
+      __Pyx_GIVEREF(__pyx_int_0);
+      PyTuple_SET_ITEM(__pyx_t_11, 1+__pyx_t_10, __pyx_int_0);
+      __Pyx_GIVEREF(__pyx_t_4);
+      PyTuple_SET_ITEM(__pyx_t_11, 2+__pyx_t_10, __pyx_t_4);
+      __Pyx_GIVEREF(__pyx_t_1);
+      PyTuple_SET_ITEM(__pyx_t_11, 3+__pyx_t_10, __pyx_t_1);
+      __pyx_t_4 = 0;
+      __pyx_t_1 = 0;
+      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_11, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 83, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_GIVEREF(__pyx_t_2);
+    __Pyx_GOTREF(__pyx_v_self->rect);
+    __Pyx_DECREF(__pyx_v_self->rect);
+    __pyx_v_self->rect = __pyx_t_2;
+    __pyx_t_2 = 0;
+
+    /* "bulletsCy.pyx":84
+ *         if not self.puffed and (self.rad > self.rad_init) and (self.pos[1] + self.rad < self.pos_init[1] - 40):
+ *             self.rect = pygame.Rect(0,0, round(self.rad / 2), self.rad * 8)
+ *             self.puffed = True             # <<<<<<<<<<<<<<
+ *         self.rect.midtop = self.pos
+ * 
+ */
+    __pyx_v_self->puffed = 1;
+
+    /* "bulletsCy.pyx":82
+ *         self.pos[0] += self.vel[0]
+ *         self.pos[1] += self.vel[1]
+ *         if not self.puffed and (self.rad > self.rad_init) and (self.pos[1] + self.rad < self.pos_init[1] - 40):             # <<<<<<<<<<<<<<
+ *             self.rect = pygame.Rect(0,0, round(self.rad / 2), self.rad * 8)
+ *             self.puffed = True
+ */
+  }
+
+  /* "bulletsCy.pyx":85
+ *             self.rect = pygame.Rect(0,0, round(self.rad / 2), self.rad * 8)
+ *             self.puffed = True
+ *         self.rect.midtop = self.pos             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef void update_outline(self):
+ */
+  __pyx_t_2 = __pyx_v_self->pos;
+  __Pyx_INCREF(__pyx_t_2);
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self->rect, __pyx_n_s_midtop, __pyx_t_2) < 0) __PYX_ERR(0, 85, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "bulletsCy.pyx":79
+ *         pygame.draw.rect(bg_obj, (255,0,0), self.rect, 1)
  * 
  *     cpdef void move(self):             # <<<<<<<<<<<<<<
  *         self.pos[0] += self.vel[0]
@@ -2842,6 +3398,8 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_move(struct __pyx_obj_9bulletsCy_C
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
   __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_9);
+  __Pyx_XDECREF(__pyx_t_11);
   __Pyx_WriteUnraisable("bulletsCy.Craft1Bullet.move", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -2869,7 +3427,7 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_6move(struct __pyx_obj_9bull
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("move", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9bulletsCy_12Craft1Bullet_move(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9bulletsCy_12Craft1Bullet_move(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -2886,8 +3444,8 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_6move(struct __pyx_obj_9bull
   return __pyx_r;
 }
 
-/* "bulletsCy.pyx":68
- *         self.pos[1] += self.vel[1]
+/* "bulletsCy.pyx":87
+ *         self.rect.midtop = self.pos
  * 
  *     cpdef void update_outline(self):             # <<<<<<<<<<<<<<
  *         self.outline_pos = []
@@ -2918,7 +3476,7 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_update_outline(struct __pyx_obj_9b
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update_outline); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 68, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_update_outline); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 87, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_9bulletsCy_12Craft1Bullet_9update_outline)) {
         __Pyx_INCREF(__pyx_t_1);
@@ -2934,7 +3492,7 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_update_outline(struct __pyx_obj_9b
         }
         __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 68, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 87, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -2954,14 +3512,14 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_update_outline(struct __pyx_obj_9b
     #endif
   }
 
-  /* "bulletsCy.pyx":69
+  /* "bulletsCy.pyx":88
  * 
  *     cpdef void update_outline(self):
  *         self.outline_pos = []             # <<<<<<<<<<<<<<
  *         for pt in self.outline:
  *             self.outline_pos.append( [self.pos[0] + pt[0] - self.rad, self.pos[1] + pt[1] -self.rad] )
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v_self->outline_pos);
@@ -2969,7 +3527,7 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_update_outline(struct __pyx_obj_9b
   __pyx_v_self->outline_pos = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "bulletsCy.pyx":70
+  /* "bulletsCy.pyx":89
  *     cpdef void update_outline(self):
  *         self.outline_pos = []
  *         for pt in self.outline:             # <<<<<<<<<<<<<<
@@ -2977,66 +3535,66 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_update_outline(struct __pyx_obj_9b
  */
   if (unlikely(__pyx_v_self->outline == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 70, __pyx_L1_error)
+    __PYX_ERR(0, 89, __pyx_L1_error)
   }
   __pyx_t_1 = __pyx_v_self->outline; __Pyx_INCREF(__pyx_t_1); __pyx_t_5 = 0;
   for (;;) {
     if (__pyx_t_5 >= PyList_GET_SIZE(__pyx_t_1)) break;
     #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 70, __pyx_L1_error)
+    __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_5); __Pyx_INCREF(__pyx_t_2); __pyx_t_5++; if (unlikely(0 < 0)) __PYX_ERR(0, 89, __pyx_L1_error)
     #else
-    __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 70, __pyx_L1_error)
+    __pyx_t_2 = PySequence_ITEM(__pyx_t_1, __pyx_t_5); __pyx_t_5++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 89, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     #endif
     __Pyx_XDECREF_SET(__pyx_v_pt, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "bulletsCy.pyx":71
+    /* "bulletsCy.pyx":90
  *         self.outline_pos = []
  *         for pt in self.outline:
  *             self.outline_pos.append( [self.pos[0] + pt[0] - self.rad, self.pos[1] + pt[1] -self.rad] )             # <<<<<<<<<<<<<<
  */
     if (unlikely(__pyx_v_self->outline_pos == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "append");
-      __PYX_ERR(0, 71, __pyx_L1_error)
+      __PYX_ERR(0, 90, __pyx_L1_error)
     }
     if (unlikely(__pyx_v_self->pos == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 71, __pyx_L1_error)
+      __PYX_ERR(0, 90, __pyx_L1_error)
     }
-    __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_self->pos, 0, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_GetItemInt_List(__pyx_v_self->pos, 0, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_pt, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_pt, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = PyNumber_Add(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_4 = PyNumber_Add(__pyx_t_2, __pyx_t_3); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_2 = PyNumber_Subtract(__pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_2 = PyNumber_Subtract(__pyx_t_4, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (unlikely(__pyx_v_self->pos == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 71, __pyx_L1_error)
+      __PYX_ERR(0, 90, __pyx_L1_error)
     }
-    __pyx_t_3 = __Pyx_GetItemInt_List(__pyx_v_self->pos, 1, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_GetItemInt_List(__pyx_v_self->pos, 1, long, 1, __Pyx_PyInt_From_long, 1, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_pt, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_pt, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_6 = PyNumber_Add(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_6 = PyNumber_Add(__pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = PyNumber_Subtract(__pyx_t_6, __pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_3 = PyNumber_Subtract(__pyx_t_6, __pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __pyx_t_4 = PyList_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_4 = PyList_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_GIVEREF(__pyx_t_2);
     PyList_SET_ITEM(__pyx_t_4, 0, __pyx_t_2);
@@ -3044,10 +3602,10 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_update_outline(struct __pyx_obj_9b
     PyList_SET_ITEM(__pyx_t_4, 1, __pyx_t_3);
     __pyx_t_2 = 0;
     __pyx_t_3 = 0;
-    __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_self->outline_pos, __pyx_t_4); if (unlikely(__pyx_t_7 == ((int)-1))) __PYX_ERR(0, 71, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_self->outline_pos, __pyx_t_4); if (unlikely(__pyx_t_7 == ((int)-1))) __PYX_ERR(0, 90, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "bulletsCy.pyx":70
+    /* "bulletsCy.pyx":89
  *     cpdef void update_outline(self):
  *         self.outline_pos = []
  *         for pt in self.outline:             # <<<<<<<<<<<<<<
@@ -3056,8 +3614,8 @@ static void __pyx_f_9bulletsCy_12Craft1Bullet_update_outline(struct __pyx_obj_9b
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "bulletsCy.pyx":68
- *         self.pos[1] += self.vel[1]
+  /* "bulletsCy.pyx":87
+ *         self.rect.midtop = self.pos
  * 
  *     cpdef void update_outline(self):             # <<<<<<<<<<<<<<
  *         self.outline_pos = []
@@ -3100,7 +3658,7 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_8update_outline(struct __pyx
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("update_outline", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9bulletsCy_12Craft1Bullet_update_outline(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 68, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_void_to_None(__pyx_f_9bulletsCy_12Craft1Bullet_update_outline(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 87, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3117,12 +3675,12 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_8update_outline(struct __pyx
   return __pyx_r;
 }
 
-/* "bulletsCy.pyx":32
+/* "bulletsCy.pyx":33
  * 
  * cdef class Craft1Bullet:
- *     cdef public int power, rad             # <<<<<<<<<<<<<<
+ *     cdef public int power, rad, rad_init             # <<<<<<<<<<<<<<
  *     cdef public tuple vel, color
- *     cdef public object mask
+ *     cdef public object mask, rect
  */
 
 /* Python wrapper */
@@ -3147,7 +3705,7 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_5power___get__(struct __pyx_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->power); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 32, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->power); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3185,7 +3743,7 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_5power_2__set__(struct __pyx_obj_9
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 32, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 33, __pyx_L1_error)
   __pyx_v_self->power = __pyx_t_1;
 
   /* function exit code */
@@ -3221,7 +3779,7 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_3rad___get__(struct __pyx_ob
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 32, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3259,7 +3817,7 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_3rad_2__set__(struct __pyx_obj_9bu
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 32, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 33, __pyx_L1_error)
   __pyx_v_self->rad = __pyx_t_1;
 
   /* function exit code */
@@ -3273,12 +3831,86 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_3rad_2__set__(struct __pyx_obj_9bu
   return __pyx_r;
 }
 
-/* "bulletsCy.pyx":33
+/* Python wrapper */
+static PyObject *__pyx_pw_9bulletsCy_12Craft1Bullet_8rad_init_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9bulletsCy_12Craft1Bullet_8rad_init_1__get__(PyObject *__pyx_v_self) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_9bulletsCy_12Craft1Bullet_8rad_init___get__(((struct __pyx_obj_9bulletsCy_Craft1Bullet *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_8rad_init___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->rad_init); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 33, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("bulletsCy.Craft1Bullet.rad_init.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_8rad_init_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_8rad_init_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_9bulletsCy_12Craft1Bullet_8rad_init_2__set__(((struct __pyx_obj_9bulletsCy_Craft1Bullet *)__pyx_v_self), ((PyObject *)__pyx_v_value));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_8rad_init_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  int __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__set__", 0);
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 33, __pyx_L1_error)
+  __pyx_v_self->rad_init = __pyx_t_1;
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("bulletsCy.Craft1Bullet.rad_init.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "bulletsCy.pyx":34
  * cdef class Craft1Bullet:
- *     cdef public int power, rad
+ *     cdef public int power, rad, rad_init
  *     cdef public tuple vel, color             # <<<<<<<<<<<<<<
- *     cdef public object mask
- *     cdef public list pos, outline, outline_pos
+ *     cdef public object mask, rect
+ *     cdef public list pos, pos_init, outline, outline_pos
  */
 
 /* Python wrapper */
@@ -3331,7 +3963,7 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_3vel_2__set__(struct __pyx_obj_9bu
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  if (!(likely(PyTuple_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 33, __pyx_L1_error)
+  if (!(likely(PyTuple_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 34, __pyx_L1_error)
   __pyx_t_1 = __pyx_v_value;
   __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -3431,7 +4063,7 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_5color_2__set__(struct __pyx_obj_9
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  if (!(likely(PyTuple_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 33, __pyx_L1_error)
+  if (!(likely(PyTuple_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 34, __pyx_L1_error)
   __pyx_t_1 = __pyx_v_value;
   __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -3481,12 +4113,12 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_5color_4__del__(struct __pyx_obj_9
   return __pyx_r;
 }
 
-/* "bulletsCy.pyx":34
- *     cdef public int power, rad
+/* "bulletsCy.pyx":35
+ *     cdef public int power, rad, rad_init
  *     cdef public tuple vel, color
- *     cdef public object mask             # <<<<<<<<<<<<<<
- *     cdef public list pos, outline, outline_pos
- *     cdef public bint exist
+ *     cdef public object mask, rect             # <<<<<<<<<<<<<<
+ *     cdef public list pos, pos_init, outline, outline_pos
+ *     cdef public bint exist, puffed
  */
 
 /* Python wrapper */
@@ -3576,11 +4208,98 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_4mask_4__del__(struct __pyx_obj_9b
   return __pyx_r;
 }
 
-/* "bulletsCy.pyx":35
+/* Python wrapper */
+static PyObject *__pyx_pw_9bulletsCy_12Craft1Bullet_4rect_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9bulletsCy_12Craft1Bullet_4rect_1__get__(PyObject *__pyx_v_self) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_9bulletsCy_12Craft1Bullet_4rect___get__(((struct __pyx_obj_9bulletsCy_Craft1Bullet *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_4rect___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(__pyx_v_self->rect);
+  __pyx_r = __pyx_v_self->rect;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_4rect_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_4rect_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_9bulletsCy_12Craft1Bullet_4rect_2__set__(((struct __pyx_obj_9bulletsCy_Craft1Bullet *)__pyx_v_self), ((PyObject *)__pyx_v_value));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_4rect_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__", 0);
+  __Pyx_INCREF(__pyx_v_value);
+  __Pyx_GIVEREF(__pyx_v_value);
+  __Pyx_GOTREF(__pyx_v_self->rect);
+  __Pyx_DECREF(__pyx_v_self->rect);
+  __pyx_v_self->rect = __pyx_v_value;
+
+  /* function exit code */
+  __pyx_r = 0;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_4rect_5__del__(PyObject *__pyx_v_self); /*proto*/
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_4rect_5__del__(PyObject *__pyx_v_self) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__del__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_9bulletsCy_12Craft1Bullet_4rect_4__del__(((struct __pyx_obj_9bulletsCy_Craft1Bullet *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_4rect_4__del__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__del__", 0);
+  __Pyx_INCREF(Py_None);
+  __Pyx_GIVEREF(Py_None);
+  __Pyx_GOTREF(__pyx_v_self->rect);
+  __Pyx_DECREF(__pyx_v_self->rect);
+  __pyx_v_self->rect = Py_None;
+
+  /* function exit code */
+  __pyx_r = 0;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "bulletsCy.pyx":36
  *     cdef public tuple vel, color
- *     cdef public object mask
- *     cdef public list pos, outline, outline_pos             # <<<<<<<<<<<<<<
- *     cdef public bint exist
+ *     cdef public object mask, rect
+ *     cdef public list pos, pos_init, outline, outline_pos             # <<<<<<<<<<<<<<
+ *     cdef public bint exist, puffed
  * 
  */
 
@@ -3634,7 +4353,7 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_3pos_2__set__(struct __pyx_obj_9bu
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  if (!(likely(PyList_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 35, __pyx_L1_error)
+  if (!(likely(PyList_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 36, __pyx_L1_error)
   __pyx_t_1 = __pyx_v_value;
   __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -3677,6 +4396,106 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_3pos_4__del__(struct __pyx_obj_9bu
   __Pyx_GOTREF(__pyx_v_self->pos);
   __Pyx_DECREF(__pyx_v_self->pos);
   __pyx_v_self->pos = ((PyObject*)Py_None);
+
+  /* function exit code */
+  __pyx_r = 0;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9bulletsCy_12Craft1Bullet_8pos_init_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9bulletsCy_12Craft1Bullet_8pos_init_1__get__(PyObject *__pyx_v_self) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_9bulletsCy_12Craft1Bullet_8pos_init___get__(((struct __pyx_obj_9bulletsCy_Craft1Bullet *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_8pos_init___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __Pyx_INCREF(__pyx_v_self->pos_init);
+  __pyx_r = __pyx_v_self->pos_init;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_8pos_init_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_8pos_init_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_9bulletsCy_12Craft1Bullet_8pos_init_2__set__(((struct __pyx_obj_9bulletsCy_Craft1Bullet *)__pyx_v_self), ((PyObject *)__pyx_v_value));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_8pos_init_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__set__", 0);
+  if (!(likely(PyList_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_1 = __pyx_v_value;
+  __Pyx_INCREF(__pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_1);
+  __Pyx_GOTREF(__pyx_v_self->pos_init);
+  __Pyx_DECREF(__pyx_v_self->pos_init);
+  __pyx_v_self->pos_init = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("bulletsCy.Craft1Bullet.pos_init.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_8pos_init_5__del__(PyObject *__pyx_v_self); /*proto*/
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_8pos_init_5__del__(PyObject *__pyx_v_self) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__del__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_9bulletsCy_12Craft1Bullet_8pos_init_4__del__(((struct __pyx_obj_9bulletsCy_Craft1Bullet *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_8pos_init_4__del__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__del__", 0);
+  __Pyx_INCREF(Py_None);
+  __Pyx_GIVEREF(Py_None);
+  __Pyx_GOTREF(__pyx_v_self->pos_init);
+  __Pyx_DECREF(__pyx_v_self->pos_init);
+  __pyx_v_self->pos_init = ((PyObject*)Py_None);
 
   /* function exit code */
   __pyx_r = 0;
@@ -3734,7 +4553,7 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_7outline_2__set__(struct __pyx_obj
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  if (!(likely(PyList_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 35, __pyx_L1_error)
+  if (!(likely(PyList_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 36, __pyx_L1_error)
   __pyx_t_1 = __pyx_v_value;
   __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -3834,7 +4653,7 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_11outline_pos_2__set__(struct __py
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  if (!(likely(PyList_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 35, __pyx_L1_error)
+  if (!(likely(PyList_CheckExact(__pyx_v_value))||((__pyx_v_value) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_v_value)->tp_name), 0))) __PYX_ERR(0, 36, __pyx_L1_error)
   __pyx_t_1 = __pyx_v_value;
   __Pyx_INCREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
@@ -3884,10 +4703,10 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_11outline_pos_4__del__(struct __py
   return __pyx_r;
 }
 
-/* "bulletsCy.pyx":36
- *     cdef public object mask
- *     cdef public list pos, outline, outline_pos
- *     cdef public bint exist             # <<<<<<<<<<<<<<
+/* "bulletsCy.pyx":37
+ *     cdef public object mask, rect
+ *     cdef public list pos, pos_init, outline, outline_pos
+ *     cdef public bint exist, puffed             # <<<<<<<<<<<<<<
  * 
  *     def __init__(self, list pos, int rad, int power, surf = surf):
  */
@@ -3914,7 +4733,7 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_5exist___get__(struct __pyx_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_self->exist); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_self->exist); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -3952,7 +4771,7 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_5exist_2__set__(struct __pyx_obj_9
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 36, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 37, __pyx_L1_error)
   __pyx_v_self->exist = __pyx_t_1;
 
   /* function exit code */
@@ -3960,6 +4779,80 @@ static int __pyx_pf_9bulletsCy_12Craft1Bullet_5exist_2__set__(struct __pyx_obj_9
   goto __pyx_L0;
   __pyx_L1_error:;
   __Pyx_AddTraceback("bulletsCy.Craft1Bullet.exist.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_9bulletsCy_12Craft1Bullet_6puffed_1__get__(PyObject *__pyx_v_self); /*proto*/
+static PyObject *__pyx_pw_9bulletsCy_12Craft1Bullet_6puffed_1__get__(PyObject *__pyx_v_self) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_9bulletsCy_12Craft1Bullet_6puffed___get__(((struct __pyx_obj_9bulletsCy_Craft1Bullet *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_6puffed___get__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__get__", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_self->puffed); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 37, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("bulletsCy.Craft1Bullet.puffed.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_6puffed_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value); /*proto*/
+static int __pyx_pw_9bulletsCy_12Craft1Bullet_6puffed_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_9bulletsCy_12Craft1Bullet_6puffed_2__set__(((struct __pyx_obj_9bulletsCy_Craft1Bullet *)__pyx_v_self), ((PyObject *)__pyx_v_value));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_9bulletsCy_12Craft1Bullet_6puffed_2__set__(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v_self, PyObject *__pyx_v_value) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  int __pyx_t_1;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__set__", 0);
+  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_value); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 37, __pyx_L1_error)
+  __pyx_v_self->puffed = __pyx_t_1;
+
+  /* function exit code */
+  __pyx_r = 0;
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_AddTraceback("bulletsCy.Craft1Bullet.puffed.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -3995,9 +4888,11 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_10__reduce_cython__(struct _
   PyObject *__pyx_t_2 = NULL;
   PyObject *__pyx_t_3 = NULL;
   PyObject *__pyx_t_4 = NULL;
-  int __pyx_t_5;
-  int __pyx_t_6;
+  PyObject *__pyx_t_5 = NULL;
+  PyObject *__pyx_t_6 = NULL;
   int __pyx_t_7;
+  int __pyx_t_8;
+  int __pyx_t_9;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -4006,7 +4901,7 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_10__reduce_cython__(struct _
   /* "(tree fragment)":5
  *     cdef object _dict
  *     cdef bint use_setstate
- *     state = (self.color, self.exist, self.mask, self.outline, self.outline_pos, self.pos, self.power, self.rad, self.vel)             # <<<<<<<<<<<<<<
+ *     state = (self.color, self.exist, self.mask, self.outline, self.outline_pos, self.pos, self.pos_init, self.power, self.puffed, self.rad, self.rad_init, self.rect, self.vel)             # <<<<<<<<<<<<<<
  *     _dict = getattr(self, '__dict__', None)
  *     if _dict is not None:
  */
@@ -4014,62 +4909,78 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_10__reduce_cython__(struct _
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->power); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 5, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 5, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_v_self->puffed); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 5, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyTuple_New(9); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 5, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->rad); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 5, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_self->rad_init); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 5, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_5);
+  __pyx_t_6 = PyTuple_New(13); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 5, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
   __Pyx_INCREF(__pyx_v_self->color);
   __Pyx_GIVEREF(__pyx_v_self->color);
-  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_self->color);
+  PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_v_self->color);
   __Pyx_GIVEREF(__pyx_t_1);
-  PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_1);
+  PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_t_1);
   __Pyx_INCREF(__pyx_v_self->mask);
   __Pyx_GIVEREF(__pyx_v_self->mask);
-  PyTuple_SET_ITEM(__pyx_t_4, 2, __pyx_v_self->mask);
+  PyTuple_SET_ITEM(__pyx_t_6, 2, __pyx_v_self->mask);
   __Pyx_INCREF(__pyx_v_self->outline);
   __Pyx_GIVEREF(__pyx_v_self->outline);
-  PyTuple_SET_ITEM(__pyx_t_4, 3, __pyx_v_self->outline);
+  PyTuple_SET_ITEM(__pyx_t_6, 3, __pyx_v_self->outline);
   __Pyx_INCREF(__pyx_v_self->outline_pos);
   __Pyx_GIVEREF(__pyx_v_self->outline_pos);
-  PyTuple_SET_ITEM(__pyx_t_4, 4, __pyx_v_self->outline_pos);
+  PyTuple_SET_ITEM(__pyx_t_6, 4, __pyx_v_self->outline_pos);
   __Pyx_INCREF(__pyx_v_self->pos);
   __Pyx_GIVEREF(__pyx_v_self->pos);
-  PyTuple_SET_ITEM(__pyx_t_4, 5, __pyx_v_self->pos);
+  PyTuple_SET_ITEM(__pyx_t_6, 5, __pyx_v_self->pos);
+  __Pyx_INCREF(__pyx_v_self->pos_init);
+  __Pyx_GIVEREF(__pyx_v_self->pos_init);
+  PyTuple_SET_ITEM(__pyx_t_6, 6, __pyx_v_self->pos_init);
   __Pyx_GIVEREF(__pyx_t_2);
-  PyTuple_SET_ITEM(__pyx_t_4, 6, __pyx_t_2);
+  PyTuple_SET_ITEM(__pyx_t_6, 7, __pyx_t_2);
   __Pyx_GIVEREF(__pyx_t_3);
-  PyTuple_SET_ITEM(__pyx_t_4, 7, __pyx_t_3);
+  PyTuple_SET_ITEM(__pyx_t_6, 8, __pyx_t_3);
+  __Pyx_GIVEREF(__pyx_t_4);
+  PyTuple_SET_ITEM(__pyx_t_6, 9, __pyx_t_4);
+  __Pyx_GIVEREF(__pyx_t_5);
+  PyTuple_SET_ITEM(__pyx_t_6, 10, __pyx_t_5);
+  __Pyx_INCREF(__pyx_v_self->rect);
+  __Pyx_GIVEREF(__pyx_v_self->rect);
+  PyTuple_SET_ITEM(__pyx_t_6, 11, __pyx_v_self->rect);
   __Pyx_INCREF(__pyx_v_self->vel);
   __Pyx_GIVEREF(__pyx_v_self->vel);
-  PyTuple_SET_ITEM(__pyx_t_4, 8, __pyx_v_self->vel);
+  PyTuple_SET_ITEM(__pyx_t_6, 12, __pyx_v_self->vel);
   __pyx_t_1 = 0;
   __pyx_t_2 = 0;
   __pyx_t_3 = 0;
-  __pyx_v_state = ((PyObject*)__pyx_t_4);
   __pyx_t_4 = 0;
+  __pyx_t_5 = 0;
+  __pyx_v_state = ((PyObject*)__pyx_t_6);
+  __pyx_t_6 = 0;
 
   /* "(tree fragment)":6
  *     cdef bint use_setstate
- *     state = (self.color, self.exist, self.mask, self.outline, self.outline_pos, self.pos, self.power, self.rad, self.vel)
+ *     state = (self.color, self.exist, self.mask, self.outline, self.outline_pos, self.pos, self.pos_init, self.power, self.puffed, self.rad, self.rad_init, self.rect, self.vel)
  *     _dict = getattr(self, '__dict__', None)             # <<<<<<<<<<<<<<
  *     if _dict is not None:
  *         state += (_dict,)
  */
-  __pyx_t_4 = __Pyx_GetAttr3(((PyObject *)__pyx_v_self), __pyx_n_s_dict, Py_None); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 6, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_v__dict = __pyx_t_4;
-  __pyx_t_4 = 0;
+  __pyx_t_6 = __Pyx_GetAttr3(((PyObject *)__pyx_v_self), __pyx_n_s_dict, Py_None); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 6, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_6);
+  __pyx_v__dict = __pyx_t_6;
+  __pyx_t_6 = 0;
 
   /* "(tree fragment)":7
- *     state = (self.color, self.exist, self.mask, self.outline, self.outline_pos, self.pos, self.power, self.rad, self.vel)
+ *     state = (self.color, self.exist, self.mask, self.outline, self.outline_pos, self.pos, self.pos_init, self.power, self.puffed, self.rad, self.rad_init, self.rect, self.vel)
  *     _dict = getattr(self, '__dict__', None)
  *     if _dict is not None:             # <<<<<<<<<<<<<<
  *         state += (_dict,)
  *         use_setstate = True
  */
-  __pyx_t_5 = (__pyx_v__dict != Py_None);
-  __pyx_t_6 = (__pyx_t_5 != 0);
-  if (__pyx_t_6) {
+  __pyx_t_7 = (__pyx_v__dict != Py_None);
+  __pyx_t_8 = (__pyx_t_7 != 0);
+  if (__pyx_t_8) {
 
     /* "(tree fragment)":8
  *     _dict = getattr(self, '__dict__', None)
@@ -4078,28 +4989,28 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_10__reduce_cython__(struct _
  *         use_setstate = True
  *     else:
  */
-    __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 8, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 8, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
     __Pyx_INCREF(__pyx_v__dict);
     __Pyx_GIVEREF(__pyx_v__dict);
-    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v__dict);
-    __pyx_t_3 = PyNumber_InPlaceAdd(__pyx_v_state, __pyx_t_4); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 8, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __Pyx_DECREF_SET(__pyx_v_state, ((PyObject*)__pyx_t_3));
-    __pyx_t_3 = 0;
+    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_v__dict);
+    __pyx_t_5 = PyNumber_InPlaceAdd(__pyx_v_state, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 8, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+    __Pyx_DECREF_SET(__pyx_v_state, ((PyObject*)__pyx_t_5));
+    __pyx_t_5 = 0;
 
     /* "(tree fragment)":9
  *     if _dict is not None:
  *         state += (_dict,)
  *         use_setstate = True             # <<<<<<<<<<<<<<
  *     else:
- *         use_setstate = self.color is not None or self.mask is not None or self.outline is not None or self.outline_pos is not None or self.pos is not None or self.vel is not None
+ *         use_setstate = self.color is not None or self.mask is not None or self.outline is not None or self.outline_pos is not None or self.pos is not None or self.pos_init is not None or self.rect is not None or self.vel is not None
  */
     __pyx_v_use_setstate = 1;
 
     /* "(tree fragment)":7
- *     state = (self.color, self.exist, self.mask, self.outline, self.outline_pos, self.pos, self.power, self.rad, self.vel)
+ *     state = (self.color, self.exist, self.mask, self.outline, self.outline_pos, self.pos, self.pos_init, self.power, self.puffed, self.rad, self.rad_init, self.rect, self.vel)
  *     _dict = getattr(self, '__dict__', None)
  *     if _dict is not None:             # <<<<<<<<<<<<<<
  *         state += (_dict,)
@@ -4111,141 +5022,155 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_10__reduce_cython__(struct _
   /* "(tree fragment)":11
  *         use_setstate = True
  *     else:
- *         use_setstate = self.color is not None or self.mask is not None or self.outline is not None or self.outline_pos is not None or self.pos is not None or self.vel is not None             # <<<<<<<<<<<<<<
+ *         use_setstate = self.color is not None or self.mask is not None or self.outline is not None or self.outline_pos is not None or self.pos is not None or self.pos_init is not None or self.rect is not None or self.vel is not None             # <<<<<<<<<<<<<<
  *     if use_setstate:
- *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x91745cb, None), state
+ *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x9f70006, None), state
  */
   /*else*/ {
-    __pyx_t_5 = (__pyx_v_self->color != ((PyObject*)Py_None));
-    __pyx_t_7 = (__pyx_t_5 != 0);
+    __pyx_t_7 = (__pyx_v_self->color != ((PyObject*)Py_None));
+    __pyx_t_9 = (__pyx_t_7 != 0);
+    if (!__pyx_t_9) {
+    } else {
+      __pyx_t_8 = __pyx_t_9;
+      goto __pyx_L4_bool_binop_done;
+    }
+    __pyx_t_9 = (__pyx_v_self->mask != Py_None);
+    __pyx_t_7 = (__pyx_t_9 != 0);
     if (!__pyx_t_7) {
     } else {
-      __pyx_t_6 = __pyx_t_7;
+      __pyx_t_8 = __pyx_t_7;
       goto __pyx_L4_bool_binop_done;
     }
-    __pyx_t_7 = (__pyx_v_self->mask != Py_None);
-    __pyx_t_5 = (__pyx_t_7 != 0);
-    if (!__pyx_t_5) {
+    __pyx_t_7 = (__pyx_v_self->outline != ((PyObject*)Py_None));
+    __pyx_t_9 = (__pyx_t_7 != 0);
+    if (!__pyx_t_9) {
     } else {
-      __pyx_t_6 = __pyx_t_5;
+      __pyx_t_8 = __pyx_t_9;
       goto __pyx_L4_bool_binop_done;
     }
-    __pyx_t_5 = (__pyx_v_self->outline != ((PyObject*)Py_None));
-    __pyx_t_7 = (__pyx_t_5 != 0);
+    __pyx_t_9 = (__pyx_v_self->outline_pos != ((PyObject*)Py_None));
+    __pyx_t_7 = (__pyx_t_9 != 0);
     if (!__pyx_t_7) {
     } else {
-      __pyx_t_6 = __pyx_t_7;
+      __pyx_t_8 = __pyx_t_7;
       goto __pyx_L4_bool_binop_done;
     }
-    __pyx_t_7 = (__pyx_v_self->outline_pos != ((PyObject*)Py_None));
-    __pyx_t_5 = (__pyx_t_7 != 0);
-    if (!__pyx_t_5) {
+    __pyx_t_7 = (__pyx_v_self->pos != ((PyObject*)Py_None));
+    __pyx_t_9 = (__pyx_t_7 != 0);
+    if (!__pyx_t_9) {
     } else {
-      __pyx_t_6 = __pyx_t_5;
+      __pyx_t_8 = __pyx_t_9;
       goto __pyx_L4_bool_binop_done;
     }
-    __pyx_t_5 = (__pyx_v_self->pos != ((PyObject*)Py_None));
-    __pyx_t_7 = (__pyx_t_5 != 0);
+    __pyx_t_9 = (__pyx_v_self->pos_init != ((PyObject*)Py_None));
+    __pyx_t_7 = (__pyx_t_9 != 0);
     if (!__pyx_t_7) {
     } else {
-      __pyx_t_6 = __pyx_t_7;
+      __pyx_t_8 = __pyx_t_7;
       goto __pyx_L4_bool_binop_done;
     }
-    __pyx_t_7 = (__pyx_v_self->vel != ((PyObject*)Py_None));
-    __pyx_t_5 = (__pyx_t_7 != 0);
-    __pyx_t_6 = __pyx_t_5;
+    __pyx_t_7 = (__pyx_v_self->rect != Py_None);
+    __pyx_t_9 = (__pyx_t_7 != 0);
+    if (!__pyx_t_9) {
+    } else {
+      __pyx_t_8 = __pyx_t_9;
+      goto __pyx_L4_bool_binop_done;
+    }
+    __pyx_t_9 = (__pyx_v_self->vel != ((PyObject*)Py_None));
+    __pyx_t_7 = (__pyx_t_9 != 0);
+    __pyx_t_8 = __pyx_t_7;
     __pyx_L4_bool_binop_done:;
-    __pyx_v_use_setstate = __pyx_t_6;
+    __pyx_v_use_setstate = __pyx_t_8;
   }
   __pyx_L3:;
 
   /* "(tree fragment)":12
  *     else:
- *         use_setstate = self.color is not None or self.mask is not None or self.outline is not None or self.outline_pos is not None or self.pos is not None or self.vel is not None
+ *         use_setstate = self.color is not None or self.mask is not None or self.outline is not None or self.outline_pos is not None or self.pos is not None or self.pos_init is not None or self.rect is not None or self.vel is not None
  *     if use_setstate:             # <<<<<<<<<<<<<<
- *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x91745cb, None), state
+ *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x9f70006, None), state
  *     else:
  */
-  __pyx_t_6 = (__pyx_v_use_setstate != 0);
-  if (__pyx_t_6) {
+  __pyx_t_8 = (__pyx_v_use_setstate != 0);
+  if (__pyx_t_8) {
 
     /* "(tree fragment)":13
- *         use_setstate = self.color is not None or self.mask is not None or self.outline is not None or self.outline_pos is not None or self.pos is not None or self.vel is not None
+ *         use_setstate = self.color is not None or self.mask is not None or self.outline is not None or self.outline_pos is not None or self.pos is not None or self.pos_init is not None or self.rect is not None or self.vel is not None
  *     if use_setstate:
- *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x91745cb, None), state             # <<<<<<<<<<<<<<
+ *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x9f70006, None), state             # <<<<<<<<<<<<<<
  *     else:
- *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x91745cb, state)
+ *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x9f70006, state)
  */
     __Pyx_XDECREF(__pyx_r);
-    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_pyx_unpickle_Craft1Bullet); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 13, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 13, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_pyx_unpickle_Craft1Bullet); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 13, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
+    __pyx_t_6 = PyTuple_New(3); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 13, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
     __Pyx_INCREF(((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
     __Pyx_GIVEREF(((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
-    PyTuple_SET_ITEM(__pyx_t_4, 0, ((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
-    __Pyx_INCREF(__pyx_int_152520139);
-    __Pyx_GIVEREF(__pyx_int_152520139);
-    PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_int_152520139);
+    PyTuple_SET_ITEM(__pyx_t_6, 0, ((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
+    __Pyx_INCREF(__pyx_int_167182342);
+    __Pyx_GIVEREF(__pyx_int_167182342);
+    PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_int_167182342);
     __Pyx_INCREF(Py_None);
     __Pyx_GIVEREF(Py_None);
-    PyTuple_SET_ITEM(__pyx_t_4, 2, Py_None);
-    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 13, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_GIVEREF(__pyx_t_3);
-    PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
-    __Pyx_GIVEREF(__pyx_t_4);
-    PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_4);
+    PyTuple_SET_ITEM(__pyx_t_6, 2, Py_None);
+    __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 13, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_GIVEREF(__pyx_t_5);
+    PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_t_5);
+    __Pyx_GIVEREF(__pyx_t_6);
+    PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_6);
     __Pyx_INCREF(__pyx_v_state);
     __Pyx_GIVEREF(__pyx_v_state);
-    PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_v_state);
-    __pyx_t_3 = 0;
+    PyTuple_SET_ITEM(__pyx_t_4, 2, __pyx_v_state);
+    __pyx_t_5 = 0;
+    __pyx_t_6 = 0;
+    __pyx_r = __pyx_t_4;
     __pyx_t_4 = 0;
-    __pyx_r = __pyx_t_2;
-    __pyx_t_2 = 0;
     goto __pyx_L0;
 
     /* "(tree fragment)":12
  *     else:
- *         use_setstate = self.color is not None or self.mask is not None or self.outline is not None or self.outline_pos is not None or self.pos is not None or self.vel is not None
+ *         use_setstate = self.color is not None or self.mask is not None or self.outline is not None or self.outline_pos is not None or self.pos is not None or self.pos_init is not None or self.rect is not None or self.vel is not None
  *     if use_setstate:             # <<<<<<<<<<<<<<
- *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x91745cb, None), state
+ *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x9f70006, None), state
  *     else:
  */
   }
 
   /* "(tree fragment)":15
- *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x91745cb, None), state
+ *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x9f70006, None), state
  *     else:
- *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x91745cb, state)             # <<<<<<<<<<<<<<
+ *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x9f70006, state)             # <<<<<<<<<<<<<<
  * def __setstate_cython__(self, __pyx_state):
  *     __pyx_unpickle_Craft1Bullet__set_state(self, __pyx_state)
  */
   /*else*/ {
     __Pyx_XDECREF(__pyx_r);
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pyx_unpickle_Craft1Bullet); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 15, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = PyTuple_New(3); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 15, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_pyx_unpickle_Craft1Bullet); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 15, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_6 = PyTuple_New(3); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 15, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_6);
     __Pyx_INCREF(((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
     __Pyx_GIVEREF(((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
-    PyTuple_SET_ITEM(__pyx_t_4, 0, ((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
-    __Pyx_INCREF(__pyx_int_152520139);
-    __Pyx_GIVEREF(__pyx_int_152520139);
-    PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_int_152520139);
+    PyTuple_SET_ITEM(__pyx_t_6, 0, ((PyObject *)Py_TYPE(((PyObject *)__pyx_v_self))));
+    __Pyx_INCREF(__pyx_int_167182342);
+    __Pyx_GIVEREF(__pyx_int_167182342);
+    PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_int_167182342);
     __Pyx_INCREF(__pyx_v_state);
     __Pyx_GIVEREF(__pyx_v_state);
-    PyTuple_SET_ITEM(__pyx_t_4, 2, __pyx_v_state);
-    __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 15, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_GIVEREF(__pyx_t_2);
-    PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_6, 2, __pyx_v_state);
+    __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 15, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_4);
-    PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_4);
-    __pyx_t_2 = 0;
+    PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4);
+    __Pyx_GIVEREF(__pyx_t_6);
+    PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_6);
     __pyx_t_4 = 0;
-    __pyx_r = __pyx_t_3;
-    __pyx_t_3 = 0;
+    __pyx_t_6 = 0;
+    __pyx_r = __pyx_t_5;
+    __pyx_t_5 = 0;
     goto __pyx_L0;
   }
 
@@ -4261,6 +5186,8 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_10__reduce_cython__(struct _
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_5);
+  __Pyx_XDECREF(__pyx_t_6);
   __Pyx_AddTraceback("bulletsCy.Craft1Bullet.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -4273,7 +5200,7 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_10__reduce_cython__(struct _
 
 /* "(tree fragment)":16
  *     else:
- *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x91745cb, state)
+ *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x9f70006, state)
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     __pyx_unpickle_Craft1Bullet__set_state(self, __pyx_state)
  */
@@ -4301,7 +5228,7 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_12__setstate_cython__(struct
   __Pyx_RefNannySetupContext("__setstate_cython__", 0);
 
   /* "(tree fragment)":17
- *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x91745cb, state)
+ *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x9f70006, state)
  * def __setstate_cython__(self, __pyx_state):
  *     __pyx_unpickle_Craft1Bullet__set_state(self, __pyx_state)             # <<<<<<<<<<<<<<
  */
@@ -4312,7 +5239,7 @@ static PyObject *__pyx_pf_9bulletsCy_12Craft1Bullet_12__setstate_cython__(struct
 
   /* "(tree fragment)":16
  *     else:
- *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x91745cb, state)
+ *         return __pyx_unpickle_Craft1Bullet, (type(self), 0x9f70006, state)
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     __pyx_unpickle_Craft1Bullet__set_state(self, __pyx_state)
  */
@@ -4431,18 +5358,18 @@ static PyObject *__pyx_pf_9bulletsCy___pyx_unpickle_Craft1Bullet(CYTHON_UNUSED P
   /* "(tree fragment)":4
  *     cdef object __pyx_PickleError
  *     cdef object __pyx_result
- *     if __pyx_checksum != 0x91745cb:             # <<<<<<<<<<<<<<
+ *     if __pyx_checksum != 0x9f70006:             # <<<<<<<<<<<<<<
  *         from pickle import PickleError as __pyx_PickleError
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x91745cb = (color, exist, mask, outline, outline_pos, pos, power, rad, vel))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x9f70006 = (color, exist, mask, outline, outline_pos, pos, pos_init, power, puffed, rad, rad_init, rect, vel))" % __pyx_checksum)
  */
-  __pyx_t_1 = ((__pyx_v___pyx_checksum != 0x91745cb) != 0);
+  __pyx_t_1 = ((__pyx_v___pyx_checksum != 0x9f70006) != 0);
   if (__pyx_t_1) {
 
     /* "(tree fragment)":5
  *     cdef object __pyx_result
- *     if __pyx_checksum != 0x91745cb:
+ *     if __pyx_checksum != 0x9f70006:
  *         from pickle import PickleError as __pyx_PickleError             # <<<<<<<<<<<<<<
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x91745cb = (color, exist, mask, outline, outline_pos, pos, power, rad, vel))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x9f70006 = (color, exist, mask, outline, outline_pos, pos, pos_init, power, puffed, rad, rad_init, rect, vel))" % __pyx_checksum)
  *     __pyx_result = Craft1Bullet.__new__(__pyx_type)
  */
     __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 5, __pyx_L1_error)
@@ -4461,15 +5388,15 @@ static PyObject *__pyx_pf_9bulletsCy___pyx_unpickle_Craft1Bullet(CYTHON_UNUSED P
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
     /* "(tree fragment)":6
- *     if __pyx_checksum != 0x91745cb:
+ *     if __pyx_checksum != 0x9f70006:
  *         from pickle import PickleError as __pyx_PickleError
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x91745cb = (color, exist, mask, outline, outline_pos, pos, power, rad, vel))" % __pyx_checksum)             # <<<<<<<<<<<<<<
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x9f70006 = (color, exist, mask, outline, outline_pos, pos, pos_init, power, puffed, rad, rad_init, rect, vel))" % __pyx_checksum)             # <<<<<<<<<<<<<<
  *     __pyx_result = Craft1Bullet.__new__(__pyx_type)
  *     if __pyx_state is not None:
  */
     __pyx_t_2 = __Pyx_PyInt_From_long(__pyx_v___pyx_checksum); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 6, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Incompatible_checksums_s_vs_0x91, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 6, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyString_Format(__pyx_kp_s_Incompatible_checksums_s_vs_0x9f, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 6, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_INCREF(__pyx_v___pyx_PickleError);
@@ -4496,15 +5423,15 @@ static PyObject *__pyx_pf_9bulletsCy___pyx_unpickle_Craft1Bullet(CYTHON_UNUSED P
     /* "(tree fragment)":4
  *     cdef object __pyx_PickleError
  *     cdef object __pyx_result
- *     if __pyx_checksum != 0x91745cb:             # <<<<<<<<<<<<<<
+ *     if __pyx_checksum != 0x9f70006:             # <<<<<<<<<<<<<<
  *         from pickle import PickleError as __pyx_PickleError
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x91745cb = (color, exist, mask, outline, outline_pos, pos, power, rad, vel))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x9f70006 = (color, exist, mask, outline, outline_pos, pos, pos_init, power, puffed, rad, rad_init, rect, vel))" % __pyx_checksum)
  */
   }
 
   /* "(tree fragment)":7
  *         from pickle import PickleError as __pyx_PickleError
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x91745cb = (color, exist, mask, outline, outline_pos, pos, power, rad, vel))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x9f70006 = (color, exist, mask, outline, outline_pos, pos, pos_init, power, puffed, rad, rad_init, rect, vel))" % __pyx_checksum)
  *     __pyx_result = Craft1Bullet.__new__(__pyx_type)             # <<<<<<<<<<<<<<
  *     if __pyx_state is not None:
  *         __pyx_unpickle_Craft1Bullet__set_state(<Craft1Bullet> __pyx_result, __pyx_state)
@@ -4530,7 +5457,7 @@ static PyObject *__pyx_pf_9bulletsCy___pyx_unpickle_Craft1Bullet(CYTHON_UNUSED P
   __pyx_t_3 = 0;
 
   /* "(tree fragment)":8
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x91745cb = (color, exist, mask, outline, outline_pos, pos, power, rad, vel))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x9f70006 = (color, exist, mask, outline, outline_pos, pos, pos_init, power, puffed, rad, rad_init, rect, vel))" % __pyx_checksum)
  *     __pyx_result = Craft1Bullet.__new__(__pyx_type)
  *     if __pyx_state is not None:             # <<<<<<<<<<<<<<
  *         __pyx_unpickle_Craft1Bullet__set_state(<Craft1Bullet> __pyx_result, __pyx_state)
@@ -4553,7 +5480,7 @@ static PyObject *__pyx_pf_9bulletsCy___pyx_unpickle_Craft1Bullet(CYTHON_UNUSED P
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
     /* "(tree fragment)":8
- *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x91745cb = (color, exist, mask, outline, outline_pos, pos, power, rad, vel))" % __pyx_checksum)
+ *         raise __pyx_PickleError("Incompatible checksums (%s vs 0x9f70006 = (color, exist, mask, outline, outline_pos, pos, pos_init, power, puffed, rad, rad_init, rect, vel))" % __pyx_checksum)
  *     __pyx_result = Craft1Bullet.__new__(__pyx_type)
  *     if __pyx_state is not None:             # <<<<<<<<<<<<<<
  *         __pyx_unpickle_Craft1Bullet__set_state(<Craft1Bullet> __pyx_result, __pyx_state)
@@ -4566,7 +5493,7 @@ static PyObject *__pyx_pf_9bulletsCy___pyx_unpickle_Craft1Bullet(CYTHON_UNUSED P
  *         __pyx_unpickle_Craft1Bullet__set_state(<Craft1Bullet> __pyx_result, __pyx_state)
  *     return __pyx_result             # <<<<<<<<<<<<<<
  * cdef __pyx_unpickle_Craft1Bullet__set_state(Craft1Bullet __pyx_result, tuple __pyx_state):
- *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.power = __pyx_state[6]; __pyx_result.rad = __pyx_state[7]; __pyx_result.vel = __pyx_state[8]
+ *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.pos_init = __pyx_state[6]; __pyx_result.power = __pyx_state[7]; __pyx_result.puffed = __pyx_state[8]; __pyx_result.rad = __pyx_state[9]; __pyx_result.rad_init = __pyx_state[10]; __pyx_result.rect = __pyx_state[11]; __pyx_result.vel = __pyx_state[12]
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v___pyx_result);
@@ -4599,8 +5526,8 @@ static PyObject *__pyx_pf_9bulletsCy___pyx_unpickle_Craft1Bullet(CYTHON_UNUSED P
  *         __pyx_unpickle_Craft1Bullet__set_state(<Craft1Bullet> __pyx_result, __pyx_state)
  *     return __pyx_result
  * cdef __pyx_unpickle_Craft1Bullet__set_state(Craft1Bullet __pyx_result, tuple __pyx_state):             # <<<<<<<<<<<<<<
- *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.power = __pyx_state[6]; __pyx_result.rad = __pyx_state[7]; __pyx_result.vel = __pyx_state[8]
- *     if len(__pyx_state) > 9 and hasattr(__pyx_result, '__dict__'):
+ *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.pos_init = __pyx_state[6]; __pyx_result.power = __pyx_state[7]; __pyx_result.puffed = __pyx_state[8]; __pyx_result.rad = __pyx_state[9]; __pyx_result.rad_init = __pyx_state[10]; __pyx_result.rect = __pyx_state[11]; __pyx_result.vel = __pyx_state[12]
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):
  */
 
 static PyObject *__pyx_f_9bulletsCy___pyx_unpickle_Craft1Bullet__set_state(struct __pyx_obj_9bulletsCy_Craft1Bullet *__pyx_v___pyx_result, PyObject *__pyx_v___pyx_state) {
@@ -4623,9 +5550,9 @@ static PyObject *__pyx_f_9bulletsCy___pyx_unpickle_Craft1Bullet__set_state(struc
   /* "(tree fragment)":12
  *     return __pyx_result
  * cdef __pyx_unpickle_Craft1Bullet__set_state(Craft1Bullet __pyx_result, tuple __pyx_state):
- *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.power = __pyx_state[6]; __pyx_result.rad = __pyx_state[7]; __pyx_result.vel = __pyx_state[8]             # <<<<<<<<<<<<<<
- *     if len(__pyx_state) > 9 and hasattr(__pyx_result, '__dict__'):
- *         __pyx_result.__dict__.update(__pyx_state[9])
+ *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.pos_init = __pyx_state[6]; __pyx_result.power = __pyx_state[7]; __pyx_result.puffed = __pyx_state[8]; __pyx_result.rad = __pyx_state[9]; __pyx_result.rad_init = __pyx_state[10]; __pyx_result.rect = __pyx_state[11]; __pyx_result.vel = __pyx_state[12]             # <<<<<<<<<<<<<<
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):
+ *         __pyx_result.__dict__.update(__pyx_state[13])
  */
   if (unlikely(__pyx_v___pyx_state == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
@@ -4701,9 +5628,12 @@ static PyObject *__pyx_f_9bulletsCy___pyx_unpickle_Craft1Bullet__set_state(struc
   }
   __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 6, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 12, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 12, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v___pyx_result->power = __pyx_t_3;
+  if (!(likely(PyList_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "list", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(1, 12, __pyx_L1_error)
+  __Pyx_GIVEREF(__pyx_t_1);
+  __Pyx_GOTREF(__pyx_v___pyx_result->pos_init);
+  __Pyx_DECREF(__pyx_v___pyx_result->pos_init);
+  __pyx_v___pyx_result->pos_init = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
   if (unlikely(__pyx_v___pyx_state == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(1, 12, __pyx_L1_error)
@@ -4712,12 +5642,50 @@ static PyObject *__pyx_f_9bulletsCy___pyx_unpickle_Craft1Bullet__set_state(struc
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 12, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v___pyx_result->rad = __pyx_t_3;
+  __pyx_v___pyx_result->power = __pyx_t_3;
   if (unlikely(__pyx_v___pyx_state == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(1, 12, __pyx_L1_error)
   }
   __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 8, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 12, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_2 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 12, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v___pyx_result->puffed = __pyx_t_2;
+  if (unlikely(__pyx_v___pyx_state == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    __PYX_ERR(1, 12, __pyx_L1_error)
+  }
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 9, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 12, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 12, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v___pyx_result->rad = __pyx_t_3;
+  if (unlikely(__pyx_v___pyx_state == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    __PYX_ERR(1, 12, __pyx_L1_error)
+  }
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 10, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 12, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(1, 12, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_v___pyx_result->rad_init = __pyx_t_3;
+  if (unlikely(__pyx_v___pyx_state == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    __PYX_ERR(1, 12, __pyx_L1_error)
+  }
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 11, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 12, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_GIVEREF(__pyx_t_1);
+  __Pyx_GOTREF(__pyx_v___pyx_result->rect);
+  __Pyx_DECREF(__pyx_v___pyx_result->rect);
+  __pyx_v___pyx_result->rect = __pyx_t_1;
+  __pyx_t_1 = 0;
+  if (unlikely(__pyx_v___pyx_state == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    __PYX_ERR(1, 12, __pyx_L1_error)
+  }
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 12, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 12, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   if (!(likely(PyTuple_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None)||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "tuple", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(1, 12, __pyx_L1_error)
   __Pyx_GIVEREF(__pyx_t_1);
@@ -4728,16 +5696,16 @@ static PyObject *__pyx_f_9bulletsCy___pyx_unpickle_Craft1Bullet__set_state(struc
 
   /* "(tree fragment)":13
  * cdef __pyx_unpickle_Craft1Bullet__set_state(Craft1Bullet __pyx_result, tuple __pyx_state):
- *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.power = __pyx_state[6]; __pyx_result.rad = __pyx_state[7]; __pyx_result.vel = __pyx_state[8]
- *     if len(__pyx_state) > 9 and hasattr(__pyx_result, '__dict__'):             # <<<<<<<<<<<<<<
- *         __pyx_result.__dict__.update(__pyx_state[9])
+ *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.pos_init = __pyx_state[6]; __pyx_result.power = __pyx_state[7]; __pyx_result.puffed = __pyx_state[8]; __pyx_result.rad = __pyx_state[9]; __pyx_result.rad_init = __pyx_state[10]; __pyx_result.rect = __pyx_state[11]; __pyx_result.vel = __pyx_state[12]
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):             # <<<<<<<<<<<<<<
+ *         __pyx_result.__dict__.update(__pyx_state[13])
  */
   if (unlikely(__pyx_v___pyx_state == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
     __PYX_ERR(1, 13, __pyx_L1_error)
   }
   __pyx_t_4 = PyTuple_GET_SIZE(__pyx_v___pyx_state); if (unlikely(__pyx_t_4 == ((Py_ssize_t)-1))) __PYX_ERR(1, 13, __pyx_L1_error)
-  __pyx_t_5 = ((__pyx_t_4 > 9) != 0);
+  __pyx_t_5 = ((__pyx_t_4 > 13) != 0);
   if (__pyx_t_5) {
   } else {
     __pyx_t_2 = __pyx_t_5;
@@ -4750,9 +5718,9 @@ static PyObject *__pyx_f_9bulletsCy___pyx_unpickle_Craft1Bullet__set_state(struc
   if (__pyx_t_2) {
 
     /* "(tree fragment)":14
- *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.power = __pyx_state[6]; __pyx_result.rad = __pyx_state[7]; __pyx_result.vel = __pyx_state[8]
- *     if len(__pyx_state) > 9 and hasattr(__pyx_result, '__dict__'):
- *         __pyx_result.__dict__.update(__pyx_state[9])             # <<<<<<<<<<<<<<
+ *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.pos_init = __pyx_state[6]; __pyx_result.power = __pyx_state[7]; __pyx_result.puffed = __pyx_state[8]; __pyx_result.rad = __pyx_state[9]; __pyx_result.rad_init = __pyx_state[10]; __pyx_result.rect = __pyx_state[11]; __pyx_result.vel = __pyx_state[12]
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):
+ *         __pyx_result.__dict__.update(__pyx_state[13])             # <<<<<<<<<<<<<<
  */
     __pyx_t_7 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v___pyx_result), __pyx_n_s_dict); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 14, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
@@ -4763,7 +5731,7 @@ static PyObject *__pyx_f_9bulletsCy___pyx_unpickle_Craft1Bullet__set_state(struc
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(1, 14, __pyx_L1_error)
     }
-    __pyx_t_7 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 9, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 14, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 13, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 14, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __pyx_t_9 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_8))) {
@@ -4785,9 +5753,9 @@ static PyObject *__pyx_f_9bulletsCy___pyx_unpickle_Craft1Bullet__set_state(struc
 
     /* "(tree fragment)":13
  * cdef __pyx_unpickle_Craft1Bullet__set_state(Craft1Bullet __pyx_result, tuple __pyx_state):
- *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.power = __pyx_state[6]; __pyx_result.rad = __pyx_state[7]; __pyx_result.vel = __pyx_state[8]
- *     if len(__pyx_state) > 9 and hasattr(__pyx_result, '__dict__'):             # <<<<<<<<<<<<<<
- *         __pyx_result.__dict__.update(__pyx_state[9])
+ *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.pos_init = __pyx_state[6]; __pyx_result.power = __pyx_state[7]; __pyx_result.puffed = __pyx_state[8]; __pyx_result.rad = __pyx_state[9]; __pyx_result.rad_init = __pyx_state[10]; __pyx_result.rect = __pyx_state[11]; __pyx_result.vel = __pyx_state[12]
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):             # <<<<<<<<<<<<<<
+ *         __pyx_result.__dict__.update(__pyx_state[13])
  */
   }
 
@@ -4795,8 +5763,8 @@ static PyObject *__pyx_f_9bulletsCy___pyx_unpickle_Craft1Bullet__set_state(struc
  *         __pyx_unpickle_Craft1Bullet__set_state(<Craft1Bullet> __pyx_result, __pyx_state)
  *     return __pyx_result
  * cdef __pyx_unpickle_Craft1Bullet__set_state(Craft1Bullet __pyx_result, tuple __pyx_state):             # <<<<<<<<<<<<<<
- *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.power = __pyx_state[6]; __pyx_result.rad = __pyx_state[7]; __pyx_result.vel = __pyx_state[8]
- *     if len(__pyx_state) > 9 and hasattr(__pyx_result, '__dict__'):
+ *     __pyx_result.color = __pyx_state[0]; __pyx_result.exist = __pyx_state[1]; __pyx_result.mask = __pyx_state[2]; __pyx_result.outline = __pyx_state[3]; __pyx_result.outline_pos = __pyx_state[4]; __pyx_result.pos = __pyx_state[5]; __pyx_result.pos_init = __pyx_state[6]; __pyx_result.power = __pyx_state[7]; __pyx_result.puffed = __pyx_state[8]; __pyx_result.rad = __pyx_state[9]; __pyx_result.rad_init = __pyx_state[10]; __pyx_result.rect = __pyx_state[11]; __pyx_result.vel = __pyx_state[12]
+ *     if len(__pyx_state) > 13 and hasattr(__pyx_result, '__dict__'):
  */
 
   /* function exit code */
@@ -4830,7 +5798,9 @@ static PyObject *__pyx_tp_new_9bulletsCy_Craft1Bullet(PyTypeObject *t, CYTHON_UN
   p->vel = ((PyObject*)Py_None); Py_INCREF(Py_None);
   p->color = ((PyObject*)Py_None); Py_INCREF(Py_None);
   p->mask = Py_None; Py_INCREF(Py_None);
+  p->rect = Py_None; Py_INCREF(Py_None);
   p->pos = ((PyObject*)Py_None); Py_INCREF(Py_None);
+  p->pos_init = ((PyObject*)Py_None); Py_INCREF(Py_None);
   p->outline = ((PyObject*)Py_None); Py_INCREF(Py_None);
   p->outline_pos = ((PyObject*)Py_None); Py_INCREF(Py_None);
   return o;
@@ -4847,7 +5817,9 @@ static void __pyx_tp_dealloc_9bulletsCy_Craft1Bullet(PyObject *o) {
   Py_CLEAR(p->vel);
   Py_CLEAR(p->color);
   Py_CLEAR(p->mask);
+  Py_CLEAR(p->rect);
   Py_CLEAR(p->pos);
+  Py_CLEAR(p->pos_init);
   Py_CLEAR(p->outline);
   Py_CLEAR(p->outline_pos);
   (*Py_TYPE(o)->tp_free)(o);
@@ -4865,8 +5837,14 @@ static int __pyx_tp_traverse_9bulletsCy_Craft1Bullet(PyObject *o, visitproc v, v
   if (p->mask) {
     e = (*v)(p->mask, a); if (e) return e;
   }
+  if (p->rect) {
+    e = (*v)(p->rect, a); if (e) return e;
+  }
   if (p->pos) {
     e = (*v)(p->pos, a); if (e) return e;
+  }
+  if (p->pos_init) {
+    e = (*v)(p->pos_init, a); if (e) return e;
   }
   if (p->outline) {
     e = (*v)(p->outline, a); if (e) return e;
@@ -4889,8 +5867,14 @@ static int __pyx_tp_clear_9bulletsCy_Craft1Bullet(PyObject *o) {
   tmp = ((PyObject*)p->mask);
   p->mask = Py_None; Py_INCREF(Py_None);
   Py_XDECREF(tmp);
+  tmp = ((PyObject*)p->rect);
+  p->rect = Py_None; Py_INCREF(Py_None);
+  Py_XDECREF(tmp);
   tmp = ((PyObject*)p->pos);
   p->pos = ((PyObject*)Py_None); Py_INCREF(Py_None);
+  Py_XDECREF(tmp);
+  tmp = ((PyObject*)p->pos_init);
+  p->pos_init = ((PyObject*)Py_None); Py_INCREF(Py_None);
   Py_XDECREF(tmp);
   tmp = ((PyObject*)p->outline);
   p->outline = ((PyObject*)Py_None); Py_INCREF(Py_None);
@@ -4922,6 +5906,20 @@ static PyObject *__pyx_getprop_9bulletsCy_12Craft1Bullet_rad(PyObject *o, CYTHON
 static int __pyx_setprop_9bulletsCy_12Craft1Bullet_rad(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
   if (v) {
     return __pyx_pw_9bulletsCy_12Craft1Bullet_3rad_3__set__(o, v);
+  }
+  else {
+    PyErr_SetString(PyExc_NotImplementedError, "__del__");
+    return -1;
+  }
+}
+
+static PyObject *__pyx_getprop_9bulletsCy_12Craft1Bullet_rad_init(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9bulletsCy_12Craft1Bullet_8rad_init_1__get__(o);
+}
+
+static int __pyx_setprop_9bulletsCy_12Craft1Bullet_rad_init(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+  if (v) {
+    return __pyx_pw_9bulletsCy_12Craft1Bullet_8rad_init_3__set__(o, v);
   }
   else {
     PyErr_SetString(PyExc_NotImplementedError, "__del__");
@@ -4968,6 +5966,19 @@ static int __pyx_setprop_9bulletsCy_12Craft1Bullet_mask(PyObject *o, PyObject *v
   }
 }
 
+static PyObject *__pyx_getprop_9bulletsCy_12Craft1Bullet_rect(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9bulletsCy_12Craft1Bullet_4rect_1__get__(o);
+}
+
+static int __pyx_setprop_9bulletsCy_12Craft1Bullet_rect(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+  if (v) {
+    return __pyx_pw_9bulletsCy_12Craft1Bullet_4rect_3__set__(o, v);
+  }
+  else {
+    return __pyx_pw_9bulletsCy_12Craft1Bullet_4rect_5__del__(o);
+  }
+}
+
 static PyObject *__pyx_getprop_9bulletsCy_12Craft1Bullet_pos(PyObject *o, CYTHON_UNUSED void *x) {
   return __pyx_pw_9bulletsCy_12Craft1Bullet_3pos_1__get__(o);
 }
@@ -4978,6 +5989,19 @@ static int __pyx_setprop_9bulletsCy_12Craft1Bullet_pos(PyObject *o, PyObject *v,
   }
   else {
     return __pyx_pw_9bulletsCy_12Craft1Bullet_3pos_5__del__(o);
+  }
+}
+
+static PyObject *__pyx_getprop_9bulletsCy_12Craft1Bullet_pos_init(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9bulletsCy_12Craft1Bullet_8pos_init_1__get__(o);
+}
+
+static int __pyx_setprop_9bulletsCy_12Craft1Bullet_pos_init(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+  if (v) {
+    return __pyx_pw_9bulletsCy_12Craft1Bullet_8pos_init_3__set__(o, v);
+  }
+  else {
+    return __pyx_pw_9bulletsCy_12Craft1Bullet_8pos_init_5__del__(o);
   }
 }
 
@@ -5021,6 +6045,20 @@ static int __pyx_setprop_9bulletsCy_12Craft1Bullet_exist(PyObject *o, PyObject *
   }
 }
 
+static PyObject *__pyx_getprop_9bulletsCy_12Craft1Bullet_puffed(PyObject *o, CYTHON_UNUSED void *x) {
+  return __pyx_pw_9bulletsCy_12Craft1Bullet_6puffed_1__get__(o);
+}
+
+static int __pyx_setprop_9bulletsCy_12Craft1Bullet_puffed(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+  if (v) {
+    return __pyx_pw_9bulletsCy_12Craft1Bullet_6puffed_3__set__(o, v);
+  }
+  else {
+    PyErr_SetString(PyExc_NotImplementedError, "__del__");
+    return -1;
+  }
+}
+
 static PyMethodDef __pyx_methods_9bulletsCy_Craft1Bullet[] = {
   {"draw", (PyCFunction)__pyx_pw_9bulletsCy_12Craft1Bullet_3draw, METH_O, 0},
   {"draw_outline", (PyCFunction)__pyx_pw_9bulletsCy_12Craft1Bullet_5draw_outline, METH_O, 0},
@@ -5034,13 +6072,17 @@ static PyMethodDef __pyx_methods_9bulletsCy_Craft1Bullet[] = {
 static struct PyGetSetDef __pyx_getsets_9bulletsCy_Craft1Bullet[] = {
   {(char *)"power", __pyx_getprop_9bulletsCy_12Craft1Bullet_power, __pyx_setprop_9bulletsCy_12Craft1Bullet_power, (char *)0, 0},
   {(char *)"rad", __pyx_getprop_9bulletsCy_12Craft1Bullet_rad, __pyx_setprop_9bulletsCy_12Craft1Bullet_rad, (char *)0, 0},
+  {(char *)"rad_init", __pyx_getprop_9bulletsCy_12Craft1Bullet_rad_init, __pyx_setprop_9bulletsCy_12Craft1Bullet_rad_init, (char *)0, 0},
   {(char *)"vel", __pyx_getprop_9bulletsCy_12Craft1Bullet_vel, __pyx_setprop_9bulletsCy_12Craft1Bullet_vel, (char *)0, 0},
   {(char *)"color", __pyx_getprop_9bulletsCy_12Craft1Bullet_color, __pyx_setprop_9bulletsCy_12Craft1Bullet_color, (char *)0, 0},
   {(char *)"mask", __pyx_getprop_9bulletsCy_12Craft1Bullet_mask, __pyx_setprop_9bulletsCy_12Craft1Bullet_mask, (char *)0, 0},
+  {(char *)"rect", __pyx_getprop_9bulletsCy_12Craft1Bullet_rect, __pyx_setprop_9bulletsCy_12Craft1Bullet_rect, (char *)0, 0},
   {(char *)"pos", __pyx_getprop_9bulletsCy_12Craft1Bullet_pos, __pyx_setprop_9bulletsCy_12Craft1Bullet_pos, (char *)0, 0},
+  {(char *)"pos_init", __pyx_getprop_9bulletsCy_12Craft1Bullet_pos_init, __pyx_setprop_9bulletsCy_12Craft1Bullet_pos_init, (char *)0, 0},
   {(char *)"outline", __pyx_getprop_9bulletsCy_12Craft1Bullet_outline, __pyx_setprop_9bulletsCy_12Craft1Bullet_outline, (char *)0, 0},
   {(char *)"outline_pos", __pyx_getprop_9bulletsCy_12Craft1Bullet_outline_pos, __pyx_setprop_9bulletsCy_12Craft1Bullet_outline_pos, (char *)0, 0},
   {(char *)"exist", __pyx_getprop_9bulletsCy_12Craft1Bullet_exist, __pyx_setprop_9bulletsCy_12Craft1Bullet_exist, (char *)0, 0},
+  {(char *)"puffed", __pyx_getprop_9bulletsCy_12Craft1Bullet_puffed, __pyx_setprop_9bulletsCy_12Craft1Bullet_puffed, (char *)0, 0},
   {0, 0, 0, 0, 0}
 };
 
@@ -5162,8 +6204,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_Bullet, __pyx_k_Bullet, sizeof(__pyx_k_Bullet), 0, 0, 1, 1},
   {&__pyx_n_s_Bullet___init, __pyx_k_Bullet___init, sizeof(__pyx_k_Bullet___init), 0, 0, 1, 1},
   {&__pyx_n_s_Craft1Bullet, __pyx_k_Craft1Bullet, sizeof(__pyx_k_Craft1Bullet), 0, 0, 1, 1},
-  {&__pyx_kp_s_Incompatible_checksums_s_vs_0x91, __pyx_k_Incompatible_checksums_s_vs_0x91, sizeof(__pyx_k_Incompatible_checksums_s_vs_0x91), 0, 0, 1, 0},
+  {&__pyx_kp_s_Incompatible_checksums_s_vs_0x9f, __pyx_k_Incompatible_checksums_s_vs_0x9f, sizeof(__pyx_k_Incompatible_checksums_s_vs_0x9f), 0, 0, 1, 0},
   {&__pyx_n_s_PickleError, __pyx_k_PickleError, sizeof(__pyx_k_PickleError), 0, 0, 1, 1},
+  {&__pyx_n_s_Rect, __pyx_k_Rect, sizeof(__pyx_k_Rect), 0, 0, 1, 1},
   {&__pyx_n_s_Surface, __pyx_k_Surface, sizeof(__pyx_k_Surface), 0, 0, 1, 1},
   {&__pyx_n_s_append, __pyx_k_append, sizeof(__pyx_k_append), 0, 0, 1, 1},
   {&__pyx_n_s_bulletsCy, __pyx_k_bulletsCy, sizeof(__pyx_k_bulletsCy), 0, 0, 1, 1},
@@ -5186,6 +6229,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_mask, __pyx_k_mask, sizeof(__pyx_k_mask), 0, 0, 1, 1},
   {&__pyx_n_s_metaclass, __pyx_k_metaclass, sizeof(__pyx_k_metaclass), 0, 0, 1, 1},
+  {&__pyx_n_s_midtop, __pyx_k_midtop, sizeof(__pyx_k_midtop), 0, 0, 1, 1},
   {&__pyx_n_s_module, __pyx_k_module, sizeof(__pyx_k_module), 0, 0, 1, 1},
   {&__pyx_n_s_move, __pyx_k_move, sizeof(__pyx_k_move), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
@@ -5207,9 +6251,11 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
   {&__pyx_n_s_qualname, __pyx_k_qualname, sizeof(__pyx_k_qualname), 0, 0, 1, 1},
   {&__pyx_n_s_rad, __pyx_k_rad, sizeof(__pyx_k_rad), 0, 0, 1, 1},
+  {&__pyx_n_s_rect, __pyx_k_rect, sizeof(__pyx_k_rect), 0, 0, 1, 1},
   {&__pyx_n_s_reduce, __pyx_k_reduce, sizeof(__pyx_k_reduce), 0, 0, 1, 1},
   {&__pyx_n_s_reduce_cython, __pyx_k_reduce_cython, sizeof(__pyx_k_reduce_cython), 0, 0, 1, 1},
   {&__pyx_n_s_reduce_ex, __pyx_k_reduce_ex, sizeof(__pyx_k_reduce_ex), 0, 0, 1, 1},
+  {&__pyx_n_s_round, __pyx_k_round, sizeof(__pyx_k_round), 0, 0, 1, 1},
   {&__pyx_n_s_self, __pyx_k_self, sizeof(__pyx_k_self), 0, 0, 1, 1},
   {&__pyx_n_s_set_colorkey, __pyx_k_set_colorkey, sizeof(__pyx_k_set_colorkey), 0, 0, 1, 1},
   {&__pyx_n_s_setstate, __pyx_k_setstate, sizeof(__pyx_k_setstate), 0, 0, 1, 1},
@@ -5224,100 +6270,114 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
+  __pyx_builtin_round = __Pyx_GetBuiltinName(__pyx_n_s_round); if (!__pyx_builtin_round) __PYX_ERR(0, 83, __pyx_L1_error)
   return 0;
+  __pyx_L1_error:;
+  return -1;
 }
 
 static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "bulletsCy.pyx":41
- *         self.power = power
- *         self.pos = pos
+  /* "bulletsCy.pyx":44
+ *         self.pos_init = pos
+ *         self.pos = pos*1
  *         self.vel = (0,-5)             # <<<<<<<<<<<<<<
  *         self.color = (255, 205, 55, 255)
  *         self.rad = rad
  */
-  __pyx_tuple__2 = PyTuple_Pack(2, __pyx_int_0, __pyx_int_neg_5); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 41, __pyx_L1_error)
+  __pyx_tuple__2 = PyTuple_Pack(2, __pyx_int_0, __pyx_int_neg_5); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
 
-  /* "bulletsCy.pyx":42
- *         self.pos = pos
+  /* "bulletsCy.pyx":45
+ *         self.pos = pos*1
  *         self.vel = (0,-5)
  *         self.color = (255, 205, 55, 255)             # <<<<<<<<<<<<<<
  *         self.rad = rad
- * 
+ *         self.rad_init = 2
  */
-  __pyx_tuple__3 = PyTuple_Pack(4, __pyx_int_255, __pyx_int_205, __pyx_int_55, __pyx_int_255); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 42, __pyx_L1_error)
+  __pyx_tuple__3 = PyTuple_Pack(4, __pyx_int_255, __pyx_int_205, __pyx_int_55, __pyx_int_255); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
 
-  /* "bulletsCy.pyx":45
- *         self.rad = rad
+  /* "bulletsCy.pyx":50
+ *         self.puffed = False
  * 
  *         surf.fill((0,0,0,0))             # <<<<<<<<<<<<<<
- *         pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
- * 
+ *         #pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
+ *         if self.rad > self.rad_init:
  */
-  __pyx_tuple__4 = PyTuple_Pack(4, __pyx_int_0, __pyx_int_0, __pyx_int_0, __pyx_int_0); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 45, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(4, __pyx_int_0, __pyx_int_0, __pyx_int_0, __pyx_int_0); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "bulletsCy.pyx":46
- * 
- *         surf.fill((0,0,0,0))
- *         pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)             # <<<<<<<<<<<<<<
- * 
- *         self.mask = pygame.mask.from_surface(surf)
+  /* "bulletsCy.pyx":53
+ *         #pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)
+ *         if self.rad > self.rad_init:
+ *             pygame.draw.circle(surf, (255,255,255,255), (self.rad, self.rad), self.rad)             # <<<<<<<<<<<<<<
+ *         else:
+ *             pygame.draw.circle(surf, (255,255,255,255), (self.rad_init, self.rad_init), self.rad_init)
  */
-  __pyx_tuple__5 = PyTuple_Pack(4, __pyx_int_255, __pyx_int_255, __pyx_int_255, __pyx_int_255); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_tuple__5 = PyTuple_Pack(4, __pyx_int_255, __pyx_int_255, __pyx_int_255, __pyx_int_255); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "bulletsCy.pyx":62
- *     cpdef void draw_outline(self, object bg_obj):
- *         if self.outline_pos:
- *             pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)             # <<<<<<<<<<<<<<
+  /* "bulletsCy.pyx":76
  * 
- *     cpdef void move(self):
+ *     cpdef void draw_outline(self, object bg_obj):
+ *         pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)             # <<<<<<<<<<<<<<
+ *         pygame.draw.rect(bg_obj, (255,0,0), self.rect, 1)
+ * 
  */
-  __pyx_tuple__6 = PyTuple_Pack(3, __pyx_int_255, __pyx_int_255, __pyx_int_255); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_tuple__6 = PyTuple_Pack(3, __pyx_int_255, __pyx_int_255, __pyx_int_255); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 76, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__6);
   __Pyx_GIVEREF(__pyx_tuple__6);
 
-  /* "bulletsCy.pyx":14
- * cdef object surf = pygame.Surface((vw, vh))
- * surf = surf.convert_alpha()
- * surf.set_colorkey((0,0,0,0))             # <<<<<<<<<<<<<<
- * class Bullet():
- *     def __init__(self):
+  /* "bulletsCy.pyx":77
+ *     cpdef void draw_outline(self, object bg_obj):
+ *         pygame.draw.lines(bg_obj, (255,255,255), True, self.outline_pos)
+ *         pygame.draw.rect(bg_obj, (255,0,0), self.rect, 1)             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef void move(self):
  */
-  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_tuple__4); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __pyx_tuple__7 = PyTuple_Pack(3, __pyx_int_255, __pyx_int_0, __pyx_int_0); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 77, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__7);
   __Pyx_GIVEREF(__pyx_tuple__7);
 
-  /* "bulletsCy.pyx":16
+  /* "bulletsCy.pyx":15
+ * cdef object surf = pygame.Surface((vw, vh))
+ * surf = surf.convert_alpha()
+ * surf.set_colorkey((0,0,0,0))             # <<<<<<<<<<<<<<
+ * class Bullet:
+ *     def __init__(self):
+ */
+  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_tuple__4); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 15, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__8);
+  __Pyx_GIVEREF(__pyx_tuple__8);
+
+  /* "bulletsCy.pyx":17
  * surf.set_colorkey((0,0,0,0))
- * class Bullet():
+ * class Bullet:
  *     def __init__(self):             # <<<<<<<<<<<<<<
  *         cdef object mask
  *         cdef list outline, outline_pos
  */
-  __pyx_tuple__8 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_mask, __pyx_n_s_outline, __pyx_n_s_outline_pos, __pyx_n_s_exist, __pyx_n_s_pt); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 16, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__8);
-  __Pyx_GIVEREF(__pyx_tuple__8);
-  __pyx_codeobj__9 = (PyObject*)__Pyx_PyCode_New(1, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__8, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_bulletsCy_pyx, __pyx_n_s_init, 16, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__9)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_tuple__9 = PyTuple_Pack(6, __pyx_n_s_self, __pyx_n_s_mask, __pyx_n_s_outline, __pyx_n_s_outline_pos, __pyx_n_s_exist, __pyx_n_s_pt); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 17, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__9);
+  __Pyx_GIVEREF(__pyx_tuple__9);
+  __pyx_codeobj__10 = (PyObject*)__Pyx_PyCode_New(1, 0, 6, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__9, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_bulletsCy_pyx, __pyx_n_s_init, 17, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__10)) __PYX_ERR(0, 17, __pyx_L1_error)
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_Craft1Bullet(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
  *     cdef object __pyx_PickleError
  *     cdef object __pyx_result
  */
-  __pyx_tuple__10 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(1, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__10);
-  __Pyx_GIVEREF(__pyx_tuple__10);
-  __pyx_codeobj__11 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__10, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Craft1Bullet, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__11)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_tuple__11 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__11);
+  __Pyx_GIVEREF(__pyx_tuple__11);
+  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__11, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Craft1Bullet, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -5328,10 +6388,12 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
 static CYTHON_SMALL_CODE int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_40 = PyInt_FromLong(40); if (unlikely(!__pyx_int_40)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_55 = PyInt_FromLong(55); if (unlikely(!__pyx_int_55)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_205 = PyInt_FromLong(205); if (unlikely(!__pyx_int_205)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_255 = PyInt_FromLong(255); if (unlikely(!__pyx_int_255)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_int_152520139 = PyInt_FromLong(152520139L); if (unlikely(!__pyx_int_152520139)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_167182342 = PyInt_FromLong(167182342L); if (unlikely(!__pyx_int_167182342)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_neg_5 = PyInt_FromLong(-5); if (unlikely(!__pyx_int_neg_5)) __PYX_ERR(0, 1, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
@@ -5383,16 +6445,16 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_vtable_9bulletsCy_Craft1Bullet.draw_outline = (void (*)(struct __pyx_obj_9bulletsCy_Craft1Bullet *, PyObject *, int __pyx_skip_dispatch))__pyx_f_9bulletsCy_12Craft1Bullet_draw_outline;
   __pyx_vtable_9bulletsCy_Craft1Bullet.move = (void (*)(struct __pyx_obj_9bulletsCy_Craft1Bullet *, int __pyx_skip_dispatch))__pyx_f_9bulletsCy_12Craft1Bullet_move;
   __pyx_vtable_9bulletsCy_Craft1Bullet.update_outline = (void (*)(struct __pyx_obj_9bulletsCy_Craft1Bullet *, int __pyx_skip_dispatch))__pyx_f_9bulletsCy_12Craft1Bullet_update_outline;
-  if (PyType_Ready(&__pyx_type_9bulletsCy_Craft1Bullet) < 0) __PYX_ERR(0, 31, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_9bulletsCy_Craft1Bullet) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_9bulletsCy_Craft1Bullet.tp_print = 0;
   #endif
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_9bulletsCy_Craft1Bullet.tp_dictoffset && __pyx_type_9bulletsCy_Craft1Bullet.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_9bulletsCy_Craft1Bullet.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_9bulletsCy_Craft1Bullet.tp_dict, __pyx_vtabptr_9bulletsCy_Craft1Bullet) < 0) __PYX_ERR(0, 31, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Craft1Bullet, (PyObject *)&__pyx_type_9bulletsCy_Craft1Bullet) < 0) __PYX_ERR(0, 31, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_9bulletsCy_Craft1Bullet) < 0) __PYX_ERR(0, 31, __pyx_L1_error)
+  if (__Pyx_SetVtable(__pyx_type_9bulletsCy_Craft1Bullet.tp_dict, __pyx_vtabptr_9bulletsCy_Craft1Bullet) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Craft1Bullet, (PyObject *)&__pyx_type_9bulletsCy_Craft1Bullet) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_9bulletsCy_Craft1Bullet) < 0) __PYX_ERR(0, 32, __pyx_L1_error)
   __pyx_ptype_9bulletsCy_Craft1Bullet = &__pyx_type_9bulletsCy_Craft1Bullet;
   __Pyx_RefNannyFinishContext();
   return 0;
@@ -5684,23 +6746,23 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_9bulletsCy_vh = __pyx_t_3;
 
-  /* "bulletsCy.pyx":12
+  /* "bulletsCy.pyx":13
  * 
  * 
  * cdef object surf = pygame.Surface((vw, vh))             # <<<<<<<<<<<<<<
  * surf = surf.convert_alpha()
  * surf.set_colorkey((0,0,0,0))
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_pygame); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_pygame); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_Surface); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_Surface); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_9bulletsCy_vw); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_9bulletsCy_vw); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_9bulletsCy_vh); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_9bulletsCy_vh); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_1);
@@ -5708,7 +6770,7 @@ if (!__Pyx_RefNanny) {
   PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_4);
   __pyx_t_1 = 0;
   __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_5); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -5717,16 +6779,16 @@ if (!__Pyx_RefNanny) {
   __Pyx_GIVEREF(__pyx_t_4);
   __pyx_t_4 = 0;
 
-  /* "bulletsCy.pyx":13
+  /* "bulletsCy.pyx":14
  * 
  * cdef object surf = pygame.Surface((vw, vh))
  * surf = surf.convert_alpha()             # <<<<<<<<<<<<<<
  * surf.set_colorkey((0,0,0,0))
- * class Bullet():
+ * class Bullet:
  */
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_9bulletsCy_surf, __pyx_n_s_convert_alpha); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_9bulletsCy_surf, __pyx_n_s_convert_alpha); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_CallNoArg(__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_XGOTREF(__pyx_v_9bulletsCy_surf);
@@ -5734,61 +6796,61 @@ if (!__Pyx_RefNanny) {
   __Pyx_GIVEREF(__pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "bulletsCy.pyx":14
+  /* "bulletsCy.pyx":15
  * cdef object surf = pygame.Surface((vw, vh))
  * surf = surf.convert_alpha()
  * surf.set_colorkey((0,0,0,0))             # <<<<<<<<<<<<<<
- * class Bullet():
+ * class Bullet:
  *     def __init__(self):
  */
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_9bulletsCy_surf, __pyx_n_s_set_colorkey); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_9bulletsCy_surf, __pyx_n_s_set_colorkey); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 15, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_5, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 15, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "bulletsCy.pyx":15
+  /* "bulletsCy.pyx":16
  * surf = surf.convert_alpha()
  * surf.set_colorkey((0,0,0,0))
- * class Bullet():             # <<<<<<<<<<<<<<
+ * class Bullet:             # <<<<<<<<<<<<<<
  *     def __init__(self):
  *         cdef object mask
  */
-  __pyx_t_4 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_empty_tuple, __pyx_n_s_Bullet, __pyx_n_s_Bullet, (PyObject *) NULL, __pyx_n_s_bulletsCy, (PyObject *) NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 15, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_Py3MetaclassPrepare((PyObject *) NULL, __pyx_empty_tuple, __pyx_n_s_Bullet, __pyx_n_s_Bullet, (PyObject *) NULL, __pyx_n_s_bulletsCy, (PyObject *) NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "bulletsCy.pyx":16
+  /* "bulletsCy.pyx":17
  * surf.set_colorkey((0,0,0,0))
- * class Bullet():
+ * class Bullet:
  *     def __init__(self):             # <<<<<<<<<<<<<<
  *         cdef object mask
  *         cdef list outline, outline_pos
  */
-  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_9bulletsCy_6Bullet_1__init__, 0, __pyx_n_s_Bullet___init, NULL, __pyx_n_s_bulletsCy, __pyx_d, ((PyObject *)__pyx_codeobj__9)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_CyFunction_New(&__pyx_mdef_9bulletsCy_6Bullet_1__init__, 0, __pyx_n_s_Bullet___init, NULL, __pyx_n_s_bulletsCy, __pyx_d, ((PyObject *)__pyx_codeobj__10)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_n_s_init, __pyx_t_5) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_4, __pyx_n_s_init, __pyx_t_5) < 0) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "bulletsCy.pyx":15
+  /* "bulletsCy.pyx":16
  * surf = surf.convert_alpha()
  * surf.set_colorkey((0,0,0,0))
- * class Bullet():             # <<<<<<<<<<<<<<
+ * class Bullet:             # <<<<<<<<<<<<<<
  *     def __init__(self):
  *         cdef object mask
  */
-  __pyx_t_5 = __Pyx_Py3ClassCreate(((PyObject*)&__Pyx_DefaultClassType), __pyx_n_s_Bullet, __pyx_empty_tuple, __pyx_t_4, NULL, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 15, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_Py3ClassCreate(((PyObject*)&__Pyx_DefaultClassType), __pyx_n_s_Bullet, __pyx_empty_tuple, __pyx_t_4, NULL, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Bullet, __pyx_t_5) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_Bullet, __pyx_t_5) < 0) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-  /* "bulletsCy.pyx":38
- *     cdef public bint exist
+  /* "bulletsCy.pyx":39
+ *     cdef public bint exist, puffed
  * 
  *     def __init__(self, list pos, int rad, int power, surf = surf):             # <<<<<<<<<<<<<<
+ *         self.exist = True
  *         self.power = power
- *         self.pos = pos
  */
   __Pyx_INCREF(__pyx_v_9bulletsCy_surf);
   __pyx_k_ = __pyx_v_9bulletsCy_surf;
@@ -6725,6 +7787,138 @@ static CYTHON_INLINE int __Pyx_SetItemInt_Fast(PyObject *o, Py_ssize_t i, PyObje
     }
 #endif
     return __Pyx_SetItemInt_Generic(o, PyInt_FromSsize_t(i), v);
+}
+
+/* PyIntBinop */
+#if !CYTHON_COMPILING_IN_PYPY
+static PyObject* __Pyx_PyInt_SubtractObjC(PyObject *op1, PyObject *op2, CYTHON_UNUSED long intval, int inplace, int zerodivision_check) {
+    (void)inplace;
+    (void)zerodivision_check;
+    #if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_CheckExact(op1))) {
+        const long b = intval;
+        long x;
+        long a = PyInt_AS_LONG(op1);
+            x = (long)((unsigned long)a - b);
+            if (likely((x^a) >= 0 || (x^~b) >= 0))
+                return PyInt_FromLong(x);
+            return PyLong_Type.tp_as_number->nb_subtract(op1, op2);
+    }
+    #endif
+    #if CYTHON_USE_PYLONG_INTERNALS
+    if (likely(PyLong_CheckExact(op1))) {
+        const long b = intval;
+        long a, x;
+#ifdef HAVE_LONG_LONG
+        const PY_LONG_LONG llb = intval;
+        PY_LONG_LONG lla, llx;
+#endif
+        const digit* digits = ((PyLongObject*)op1)->ob_digit;
+        const Py_ssize_t size = Py_SIZE(op1);
+        if (likely(__Pyx_sst_abs(size) <= 1)) {
+            a = likely(size) ? digits[0] : 0;
+            if (size == -1) a = -a;
+        } else {
+            switch (size) {
+                case -2:
+                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
+                        a = -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
+                        lla = -(PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                case 2:
+                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
+                        a = (long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
+                        lla = (PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                case -3:
+                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
+                        a = -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
+                        lla = -(PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                case 3:
+                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
+                        a = (long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
+                        lla = (PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                case -4:
+                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
+                        a = -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
+                        lla = -(PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                case 4:
+                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
+                        a = (long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        break;
+#ifdef HAVE_LONG_LONG
+                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
+                        lla = (PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
+                        goto long_long;
+#endif
+                    }
+                    CYTHON_FALLTHROUGH;
+                default: return PyLong_Type.tp_as_number->nb_subtract(op1, op2);
+            }
+        }
+                x = a - b;
+            return PyLong_FromLong(x);
+#ifdef HAVE_LONG_LONG
+        long_long:
+                llx = lla - llb;
+            return PyLong_FromLongLong(llx);
+#endif
+        
+        
+    }
+    #endif
+    if (PyFloat_CheckExact(op1)) {
+        const long b = intval;
+        double a = PyFloat_AS_DOUBLE(op1);
+            double result;
+            PyFPE_START_PROTECT("subtract", return NULL)
+            result = ((double)a) - (double)b;
+            PyFPE_END_PROTECT(result)
+            return PyFloat_FromDouble(result);
+    }
+    return (inplace ? PyNumber_InPlaceSubtract : PyNumber_Subtract)(op1, op2);
+}
+#endif
+
+/* None */
+static CYTHON_INLINE long __Pyx_div_long(long a, long b) {
+    long q = a / b;
+    long r = a - q*b;
+    q -= ((r != 0) & ((r ^ b) < 0));
+    return q;
 }
 
 /* PyErrExceptionMatches */

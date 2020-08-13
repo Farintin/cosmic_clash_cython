@@ -1,14 +1,131 @@
 {
-    "items": {
-        "multi": {
-            "unit": 1,
-            "shield": 1,
-            "rapid": 1,
-            "puff": 1,
-            "life": 1
+    "item": {
+        "periods": [
+            {
+                "t": 30,
+                "price": false
+            },
+            {
+                "t": 60,
+                "price": 60
+            },
+            {
+                "t": 90,
+                "price": 90
+            },
+            {
+                "t": 120,
+                "price": 120
+            },
+            {
+                "t": 150,
+                "price": 150
+            }
+        ],
+        "items": {
+            "puffy": {
+                "multi": {
+                    "state": 0,
+                    "multis": [
+                        {
+                            "n": 2,
+                            "price": false
+                        },
+                        {
+                            "n": 4,
+                            "price": 50
+                        },
+                        {
+                            "n": 6,
+                            "price": 100
+                        },
+                        {
+                            "n": 8,
+                            "price": 150
+                        }
+                    ],
+                    "purchasable": true
+                },
+                "period": {
+                    "state": 1,
+                    "purchasable": true
+                }
+            },
+            "rapid": {
+                "multi": {
+                    "state": 1,
+                    "multis": [
+                        {
+                            "n": 1,
+                            "price": false
+                        },
+                        {
+                            "n": 2,
+                            "price": 50
+                        },
+                        {
+                            "n": 4,
+                            "price": 100
+                        },
+                        {
+                            "n": 8,
+                            "price": 150
+                        }
+                    ],
+                    "purchasable": true
+                },
+                "period": {
+                    "state": 2,
+                    "purchasable": true
+                }
+            },
+            "unit": {
+                "multi": {
+                    "state": 0,
+                    "multis": [
+                        {
+                            "n": 1,
+                            "price": false
+                        },
+                        {
+                            "n": 2,
+                            "price": 200
+                        },
+                        {
+                            "n": 4,
+                            "price": 300
+                        },
+                        {
+                            "n": 8,
+                            "price": 400
+                        }
+                    ],
+                    "purchasable": true
+                }
+            },
+            "bubble": {
+                "period": {
+                    "state": 0,
+                    "purchasable": true
+                }
+            },
+            "magnet": {
+                "period": {
+                    "state": 0,
+                    "purchasable": true
+                }
+            },
+            "shield": {
+                "bought": 0,
+                "price": 10
+            },
+            "life": {
+                "bought": 0,
+                "price": 40
+            }
         }
     },
-    "units": 261,
+    "units": 5002,
     "levels": {
         "current": 16,
         "body_prob": {
@@ -413,7 +530,7 @@
             ]
         },
         "scores": {
-            "1": 7,
+            "1": 4,
             "2": 7,
             "3": 11,
             "4": 17,
@@ -427,12 +544,12 @@
             "12": 0,
             "13": 0,
             "14": 0,
-            "15": 10,
-            "16": 0,
+            "15": 23,
+            "16": 27,
             "17": 0,
             "18": 27,
             "19": 25,
-            "20": 0,
+            "20": 26,
             "21": 0,
             "22": 0,
             "23": 0,
